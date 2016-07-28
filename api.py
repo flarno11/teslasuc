@@ -112,7 +112,7 @@ def submit():
         charging_collection.insert(submission)
         return jsonify({'error': None})
     else:
-        results = [c for c in charging_collection.find({},{'_id': False})]
+        results = [c for c in charging_collection.find({},{'_id': False}).sort({'time': -1})]
         return Response(JSONEncoder().encode(results), mimetype='application/json')
 
 
