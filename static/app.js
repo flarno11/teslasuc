@@ -1,22 +1,17 @@
 angular.module("myApp", ['ngMaterial'])
 
-.config(function($mdDateLocaleProvider) {
-    $mdDateLocaleProvider.formatDate = function(date) {
-        if (date !== undefined) {
-            return date.toJSON().split('T')[0];
-        } else {
-            return null;
-        }
-       //return moment(date).format('YYYY-MM-DD');
-    };
+.config(function($mdThemingProvider) {
+  $mdThemingProvider.theme('default')
+    .primaryPalette('red')
+    .accentPalette('red');
 })
 
 .service('toaster', function($mdToast) {
     var last = {
       bottom: false,
       top: true,
-      left: false,
-      right: true
+      left: true,
+      right: false
     };
     var toastPosition = angular.extend({},last);
     function getToastPosition() {
@@ -49,7 +44,7 @@ angular.module("myApp", ['ngMaterial'])
     $scope.currentNavItem = 'submit';
 })
 
-.controller('teslaController', function($scope, $q, $log, $http, $timeout, toaster) {
+.controller('teslaController', function($scope, $q, $log, $http, $timeout, $window, toaster) {
     $scope.position = "";
     $scope.locating = false;
     $scope.item = undefined;
@@ -136,13 +131,15 @@ angular.module("myApp", ['ngMaterial'])
         var d = $scope.date;
         d.setHours($scope.time.getHours());
         d.setMinutes($scope.time.getMinutes());
-        $scope.item.time = moment(d).format('YYYY-MM-DD HH:mm:ss');
+        d.setSeconds(0, 0);
+        $scope.item.time = moment(d);
         $log.info('Submit', $scope.item);
         $scope.submitting = true;
 
         $http.post('/charging', $scope.item).then(function successCallback(response) {
             $scope.submitting = false;
             toaster.showSimpleToast("Submitted, thank you.");
+            $window.scrollTo(0, 0);
             $scope.searchText = '';
             $scope.item = undefined;
           }, function errorCallback(response) {

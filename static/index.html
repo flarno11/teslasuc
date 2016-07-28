@@ -21,6 +21,7 @@
 <div ng-if="currentNavItem=='submit'">
     <form ng-controller="teslaController as ctrl" ng-submit="$event.preventDefault()" name="myForm">
 
+    <br />
     <button ng-click="locate()">Locate me</button>
     <md-progress-circular md-mode="indeterminate" ng-if="locating"></md-progress-circular>
 
@@ -76,12 +77,14 @@
 
     <br />
     <md-button class="md-raised" ng-click="submit()" ng-disabled="item == undefined || submitting">Submit</md-button>
-    <br /><br /><br />
+
+    <!--<br /><br /><br />
     myForm.time.$valid = {{myForm.time.$valid}}<br/>
     myForm.time.$error = {{myForm.time.$error}}<br/>
     myForm.$valid = {{myForm.$valid}}<br/>
     myForm.$error = {{myForm.$error}}<br/>
-    myForm.$error.required = {{!!myForm.$error.required}}<br/>
+    myForm.$error.required = {{!!myForm.$error.required}}<br/>-->
+
     </form>
 </div>
 
@@ -94,7 +97,7 @@
           <div class="md-list-item-text" layout="column">
             <h3>{{ item.title }}</h3>
             <h4>{{ item.stalls }} / {{ item.charging }} / {{ item.blocked }} / {{ item.waiting }} / </h4>
-            <p>{{ item.time }}</p>
+            <p>{{ item.time | date:'yyyy-MM-dd HH:mm Z' }}</p>
           </div>
         </md-list-item>
     </md-list>
