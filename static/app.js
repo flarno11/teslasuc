@@ -69,8 +69,8 @@ angular.module("myApp", ['ngMaterial'])
                     $scope.position = [lat, lng];
                     $scope.locating = false;
 
-                    $scope.searchText = lat +","+lng;
-                    document.getElementById('input-0').focus();
+                    $scope.searchText = lat.toFixed(3) +","+lng.toFixed(3);
+                    document.getElementById('auto_complete_id').getElementsByTagName("input")[0].focus();
 
                     /*$http({
                       method: 'GET',
