@@ -56,7 +56,9 @@ def import_from_url(url, type):
         suc_collection.insert(d)
     logger.info("Imported, type=%s, count=%d" % (type, len(results)))
 
-logger.info("Importing, suc_collection_count=%d" % suc_collection.count())
-suc_collection.remove()
-import_from_url('https://www.tesla.com/all-locations?type=supercharger', 'supercharger')
-import_from_url('https://www.tesla.com/all-locations?type=destination_charger', 'destination_charger')
+
+def run_import():
+    logger.info("Importing, suc_collection_count=%d" % suc_collection.count())
+    suc_collection.remove()
+    import_from_url('https://www.tesla.com/all-locations?type=supercharger', 'supercharger')
+    import_from_url('https://www.tesla.com/all-locations?type=destination_charger', 'destination_charger')

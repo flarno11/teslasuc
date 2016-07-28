@@ -11,13 +11,12 @@ from flask.wrappers import Response
 
 from config import setup_logging, setup_db
 from lib import TimeFormat, convert_time_fields, TimePattern
+from run_import import run_import
 
 logger = setup_logging()
 db = setup_db()
 suc_collection = db.suc
 charging_collection = db.charging
-
-port = int(os.getenv("VCAP_APP_PORT", "-1"))
 
 max_distance = 20000
 pattern_latlng = re.compile("(\d+\.\d+),(\d+\.\d+)")
@@ -60,6 +59,12 @@ def handle_invalid_usage(error):
 @app.route('/')
 def hello_world():
     return app.send_static_file('index.html')
+
+
+@app.route('/import', methods=['POST'])
+def route_import():
+    run_import()
+    return jsonify({'error': None})
 
 
 @app.route('/lookup')
@@ -138,5 +143,7 @@ def validate_date(s):
 
 app.json_encoder = JSONEncoder
 
+
 if __name__ == "__main__":
+    # port = int(os.getenv("VCAP_APP_PORT", "-1"))
     app.run()
