@@ -4,12 +4,12 @@ import datetime
 import os
 from datetime import timedelta
 
-from config import setup_logging, setup_db
 from flask.templating import render_template
 from flask import Flask, redirect, url_for, jsonify, request
 from bson.objectid import ObjectId
 from flask.wrappers import Response
 
+from config import setup_logging, setup_db
 from lib import TimeFormat, convert_time_fields, TimePattern
 
 logger = setup_logging()
@@ -137,4 +137,6 @@ def validate_date(s):
 
 
 app.json_encoder = JSONEncoder
-app.run()
+
+if __name__ == "__main__":
+    app.run()
