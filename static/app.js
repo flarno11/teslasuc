@@ -152,10 +152,15 @@ angular.module("myApp", ['ngMaterial'])
 
 
 .controller('historyController', function($scope, $http, $log) {
-    $scope.searchText = "";
+    $scope.filterText = "";
     $scope.items = [];
+
+    $scope.$watch('filterText', function(newValue, oldValue) {
+        $scope.loadHistory();
+    });
+
     $scope.loadHistory = function() {
-        $http.get('/charging?query='+$scope.searchText).then(function successCallback(response) {
+        $http.get('/charging?filter='+$scope.filterText).then(function successCallback(response) {
             $scope.items = response.data;
             $log.info($scope.items);
           }, function errorCallback(response) {

@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>Tesla SuC</title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc.5/angular-material.min.css">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc.5/angular-material.min.css" />
+    <link rel="stylesheet" href="/static/app.css" />
 </head>
 <body ng-app="myApp" ng-controller="navController">
 
@@ -91,11 +91,17 @@
 <div ng-if="currentNavItem=='history'">
     <div ng-controller="historyController">
     <md-list flex>
-        <md-subheader class="md-no-sticky">History</md-subheader>
+        <md-subheader class="md-no-sticky">
+            Export <a href="/charging">Json</a>/<a href="/charging?format=csv">CSV</a><br />
+            <md-input-container class="tight">
+                <label>Filter</label>
+                <input ng-model="filterText">
+            </md-input-container>
+        </md-subheader>
         <md-list-item class="md-3-line" ng-repeat="item in items" ng-click="null">
           <img ng-src="" class="md-avatar" alt="" />
           <div class="md-list-item-text" layout="column">
-            <h3>{{ item.title }}</h3>
+            <h3><span md-highlight-text="filterText" md-highlight-flags="^i">{{item.title}}</span></h3>
             <h4>{{ item.stalls }} / {{ item.charging }} / {{ item.blocked }} / {{ item.waiting }} / </h4>
             <p>{{ item.time | date:'yyyy-MM-dd HH:mm Z' }}</p>
           </div>

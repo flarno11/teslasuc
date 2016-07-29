@@ -33,4 +33,5 @@ def setup_db():
     suc_collection.create_index("locationId")
     #suc_collection.create_index("sub_region")
     suc_collection.create_index([("loc", pymongo.GEOSPHERE)])
+    suc_collection.create_index([("type", pymongo.ASCENDING), ("locationId", pymongo.ASCENDING)], unique=True)
     return db

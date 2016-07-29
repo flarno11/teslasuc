@@ -10,8 +10,8 @@ from bson.objectid import ObjectId
 from flask.wrappers import Response
 
 from config import setup_logging, setup_db
-from lib import TimeFormat, convert_time_fields, TimePattern
-from run_import import run_import
+from lib import TimeFormat, convert_time_fields, TimePattern, convert_to_csv
+from run_import import run_import, import_chargings
 
 logger = setup_logging()
 db = setup_db()
@@ -77,7 +77,7 @@ def lookup_query():
             q = get_query_coords(lat, lng)
             q['type'] = 'supercharger'
         else:
-            q = {'title': {'$regex': query_param, '$options': '-i'}, 'type': 'supercharger'}
+            q = {'title': {'$regex': re.escape(query_param), '$options': '-i'}, 'type': 'supercharger'}
         results = [c for c in suc_collection.find(q, {'raw': False, '_id': False, 'loc': False, 'type': False})]
     else:
         results = []
@@ -90,7 +90,7 @@ def get_query_coords(lat, lng):
 
 
 @app.route('/charging', methods=['GET', 'POST'])
-def submit():
+def charging():
     if request.method == 'POST':
         client_data = request.get_json(force=True)
 
@@ -112,8 +112,28 @@ def submit():
         charging_collection.insert(submission)
         return jsonify({'error': None})
     else:
-        results = [c for c in charging_collection.find({},{'_id': False}).sort('time', -1)]
-        return Response(JSONEncoder().encode(results), mimetype='application/json')
+        query_param = request.args.get('filter', None)
+        format = request.args.get('format', None)
+
+        if query_param and len(query_param) > 0:
+            query = {'title': {'$regex': re.escape(query_param), '$options': '-i'}}
+        else:
+            query = {}
+
+        results = [c for c in charging_collection.find(query, {'_id': False}).sort('time', -1)]
+
+        if format == 'csv':
+            response = Response(convert_to_csv(results), mimetype='application/csv')
+            response.headers["Content-Disposition"] = "attachment; filename=charging.csv"
+            return response
+        else:
+            return Response(JSONEncoder().encode(results), mimetype='application/json')
+
+
+@app.route('/chargingImport', methods=['POST'])
+def charging_import():
+    c = import_chargings(request.get_data(as_text=True))
+    return jsonify({'imported': c})
 
 
 def validate_location(location_id, stalls, title):
