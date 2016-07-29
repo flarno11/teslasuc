@@ -27,6 +27,7 @@ def setup_db():
     suc_collection = db.suc
     #suc_collection.ensure_index([('type', pymongo.ASCENDING)])
     suc_collection.create_index("type")
+    suc_collection.create_index("title")
     #suc_collection.create_index("text")
     #suc_collection.create_index("city")
     #suc_collection.create_index("common_name")
@@ -34,4 +35,7 @@ def setup_db():
     #suc_collection.create_index("sub_region")
     suc_collection.create_index([("loc", pymongo.GEOSPHERE)])
     suc_collection.create_index([("type", pymongo.ASCENDING), ("locationId", pymongo.ASCENDING)], unique=True)
+
+    charging_colleciton = db.charging_colleciton
+    charging_colleciton.create_index("title")
     return db
