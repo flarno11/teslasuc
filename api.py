@@ -247,6 +247,8 @@ def validate_location(location_id):
 
 
 def validate_int(s):
+    if not s:
+        raise InvalidAPIUsage("Invalid number", status_code=400)
     val = int(s)
     if val < 0:
         raise InvalidAPIUsage("Invalid number", status_code=400)
