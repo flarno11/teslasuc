@@ -160,8 +160,8 @@ def import_checkins(data):
             'checkin': {
                 'time': time,
                 'charging': int(item[4]),
-                'waiting': int(item[5]),
-                'blocked': int(item[6]),
+                'blocked': int(item[5]),
+                'waiting': int(item[6]),
                 'notes': notes,
             },
             'submitter': {
