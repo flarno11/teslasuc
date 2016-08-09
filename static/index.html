@@ -15,6 +15,7 @@
             <md-nav-bar md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links">
             <md-nav-item md-nav-click="goto('submit')" name="submit">Submit</md-nav-item>
             <md-nav-item md-nav-click="goto('history')" name="history">History</md-nav-item>
+            <md-nav-item md-nav-click="goto('stats')" name="stats">Stats</md-nav-item>
             </md-nav-bar>
 
 
@@ -67,16 +68,27 @@
 
     <md-input-container>
         <label>Date</label>
-        <input type="date" ng-model="date" name="date">
+        <input required type="date" ng-model="date" name="date">
     </md-input-container>
 
     <md-input-container>
         <label>Time</label>
-        <input type="time" ng-model="time" name="time">
+        <input required type="time" ng-model="time" name="time">
+    </md-input-container>
+    <br />
+
+    <md-input-container class="md-block">
+        <label>TFF Username</label>
+        <input required type="text" name="tffUserId" ng-model="tffUserId" max="1000" />
     </md-input-container>
 
-    <br />
-    <md-button class="md-raised" ng-click="submit()" ng-disabled="item == undefined || submitting">Submit</md-button>
+    <md-input-container class="md-block">
+        <label>Notes</label>
+        <input type="text" name="notes" ng-model="item.notes" max="1000" />
+    </md-input-container>
+
+
+    <md-button class="md-raised" ng-click="submit()" ng-disabled="item == undefined || submitting || !myForm.$valid">Submit</md-button>
 
     <!--<br /><br /><br />
     myForm.time.$valid = {{myForm.time.$valid}}<br/>
@@ -92,7 +104,7 @@
     <div ng-controller="historyController">
     <md-list flex>
         <md-subheader class="md-no-sticky">
-            Export <a href="/charging">Json</a>/<a href="/charging?format=csv">CSV</a><br />
+            Export <a href="/checkin">Json</a>/<a href="/checkin?format=csv">CSV</a><br />
             <md-input-container class="tight">
                 <label>Filter</label>
                 <input ng-model="filterText">
@@ -101,9 +113,26 @@
         <md-list-item class="md-3-line" ng-repeat="item in items" ng-click="null">
           <img ng-src="" class="md-avatar" alt="" />
           <div class="md-list-item-text" layout="column">
-            <h3><span md-highlight-text="filterText" md-highlight-flags="^i">{{item.title}}</span></h3>
-            <h4>{{ item.stalls }} / {{ item.charging }} / {{ item.blocked }} / {{ item.waiting }} / </h4>
-            <p>{{ item.time | date:'yyyy-MM-dd HH:mm Z' }}</p>
+            <h3><span md-highlight-text="filterText" md-highlight-flags="^i">{{item.suc.title}}</span></h3>
+            <h4>{{ item.suc.stalls }} / {{ item.checkin.charging }} / {{ item.checkin.blocked }} / {{ item.checkin.waiting }}</h4>
+            <h4>{{ item.checkin.notes }}</h4>
+            <p>{{ item.checkin.time | date:'yyyy-MM-dd HH:mm Z' }}</p>
+          </div>
+        </md-list-item>
+    </md-list>
+    </div>
+</div>
+
+<div ng-if="currentNavItem=='stats'">
+    <div ng-controller="statsController">
+    <md-list flex>
+        <md-subheader class="md-no-sticky">
+        </md-subheader>
+        <md-list-item class="md-3-line" ng-repeat="item in items" ng-click="null">
+          <img ng-src="" class="md-avatar" alt="" />
+          <div class="md-list-item-text" layout="column">
+              <h3>{{ item.country }}</h3>
+              <h4>SuperChargers: {{ item.sucs }}<br />Check-ins: {{ item.checkins }}</h4>
           </div>
         </md-list-item>
     </md-list>

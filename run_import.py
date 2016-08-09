@@ -13,12 +13,13 @@ from config import setup_logging, setup_db
 logger = setup_logging()
 db = setup_db()
 suc_collection = db.suc
-charging_collection = db.charging
+checkin_collection = db.checkin
 
 pattern_suc = re.compile(".*(\d+) Supercharger.*", re.DOTALL)
 pattern_dc = re.compile(".*(\d+) Tesla Connector.*", re.DOTALL)
 
 tz_zurich = timezone('Europe/Zurich')
+
 
 def chargers(s):
     m = pattern_suc.match(s)
@@ -49,6 +50,7 @@ def import_from_url(url, type):
             'type': type,
             'locationId': r['location_id'],
             'title': r['title'],
+            'country': r['country'],
             'raw': r,
         }
         if 'chargers' in r:
@@ -87,16 +89,24 @@ correction_table = {
     'Stockholm Infracity': 'Sollentuna',
     'Palmanova': 'Palmanova Supercharger 2',
     'Hamburg': 'Hamburg Supercharger',
+    'Chambery': 'Chambéry Supercharger',
+    'Chambery Barberaz': 'Chambéry Barberaz Supercharger',
+    'St.Anton': 'St. Anton Supercharger',
+    'St.Valentin': 'St. Valentin Supercharger',
+    'Wernberg-Koeblitz': 'Wernberg-Köblitz',
+    'Rheine': 'Emsbüren',
+    'Calais': 'calaissupercharger',
 }
 
-def import_chargings(data):
+
+def import_checkins(data):
     post_data = filter(None, data.split("\n"))
     items = [d.split(",") for d in post_data]
 
     def parse(item):
         error = None
 
-        if len(item) != 7:
+        if len(item) != 7 and len(item) != 11:
             error = 'len=' + str(len(item))
 
         text = item[2]
@@ -114,7 +124,7 @@ def import_chargings(data):
             })]
         if len(sucs) != 1:
             error = 'Invalid supercharger, len=%d' % len(sucs)
-            suc = {'locationId': None, 'title': text}
+            suc = {'locationId': None, 'title': text, 'country': None}
         else:
             suc = sucs[0]
 
@@ -125,19 +135,46 @@ def import_chargings(data):
             time = None
             error = 'Invalid time: ' + item[0] + ' ' + item[1]
 
+        if len(item) == 11:
+            notes = item[7]
+            tff_user_id = item[8]
+
+            try:
+                time_report = datetime.datetime.strptime(item[9] + ' ' + item[10], "%m/%d/%Y %H:%M")
+                time_report = tz_zurich.localize(time_report)
+            except:
+                time_report = None
+                error = 'Invalid time2: ' + item[9] + ' ' + item[10]
+        else:
+            time_report = time
+            notes = None
+            tff_user_id = None
+
         return {
-            'locationId': suc['locationId'],
-            'title': suc['title'],
-            'time': time,
-            'stalls': item[3],
-            'charging': item[4],
-            'waiting': item[5],
-            'blocked': item[6],
-            'error': error
+            'suc': {
+                'locationId': suc['locationId'],
+                'title': suc['title'],
+                'country': suc['country'],
+                'stalls': item[3],
+            },
+            'checkin': {
+                'time': time,
+                'charging': item[4],
+                'waiting': item[5],
+                'blocked': item[6],
+                'notes': notes,
+            },
+            'submitter': {
+                'time': time_report,
+                'tffUserId': tff_user_id,
+                'ip': None,
+                'userAgent': None,
+            },
+            'error': error,
         }
     parsed = list(filter(None, [parse(i) for i in items]))
     for item in parsed:
-        charging_collection.insert(item)
+        checkin_collection.insert(item)
     return len(parsed)
 
 

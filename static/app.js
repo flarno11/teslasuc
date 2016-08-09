@@ -55,6 +55,8 @@ angular.module("myApp", ['ngMaterial'])
     d.setSeconds(0,0);
     $scope.time = d;
 
+    $scope.tffUserId = "";
+
 
     $scope.locate = function() {
         $log.info("locating...")
@@ -124,6 +126,7 @@ angular.module("myApp", ['ngMaterial'])
             $scope.item = item;
             $scope.item.blocked = 0;
             $scope.item.waiting = 0;
+            $scope.item.notes = "";
         }
     }
 
@@ -133,10 +136,11 @@ angular.module("myApp", ['ngMaterial'])
         d.setMinutes($scope.time.getMinutes());
         d.setSeconds(0, 0);
         $scope.item.time = moment(d);
+        $scope.item.tffUserId = $scope.tffUserId;
         $log.info('Submit', $scope.item);
         $scope.submitting = true;
 
-        $http.post('/charging', $scope.item).then(function successCallback(response) {
+        $http.post('/checkin', $scope.item).then(function successCallback(response) {
             $scope.submitting = false;
             toaster.showSimpleToast("Submitted, thank you.");
             $window.scrollTo(0, 0);
@@ -160,9 +164,8 @@ angular.module("myApp", ['ngMaterial'])
     });
 
     $scope.loadHistory = function() {
-        $http.get('/charging?filter='+$scope.filterText).then(function successCallback(response) {
+        $http.get('/checkin?limit=500&filter='+$scope.filterText).then(function successCallback(response) {
             $scope.items = response.data;
-            $log.info($scope.items);
           }, function errorCallback(response) {
             $log.error(response);
         });
@@ -170,4 +173,19 @@ angular.module("myApp", ['ngMaterial'])
 
     $scope.loadHistory();
 })
+
+.controller('statsController', function($scope, $http, $log) {
+    $scope.items = [];
+
+    $scope.loadStats = function() {
+        $http.get('/stats').then(function successCallback(response) {
+            $scope.items = response.data;
+          }, function errorCallback(response) {
+            $log.error(response);
+        });
+    };
+
+    $scope.loadStats();
+})
+
 ;

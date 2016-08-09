@@ -23,19 +23,15 @@ def setup_db():
 
     db = MongoClient(mongo_url)[db_name]
 
-    #db = MongoClient('mongodb://localhost:11003/').suc
     suc_collection = db.suc
     #suc_collection.ensure_index([('type', pymongo.ASCENDING)])
     suc_collection.create_index("type")
     suc_collection.create_index("title")
-    #suc_collection.create_index("text")
-    #suc_collection.create_index("city")
-    #suc_collection.create_index("common_name")
     suc_collection.create_index("locationId")
-    #suc_collection.create_index("sub_region")
+    suc_collection.create_index("country")
     suc_collection.create_index([("loc", pymongo.GEOSPHERE)])
     suc_collection.create_index([("type", pymongo.ASCENDING), ("locationId", pymongo.ASCENDING)], unique=True)
 
-    charging_colleciton = db.charging_colleciton
-    charging_colleciton.create_index("title")
+    checkin_colleciton = db.checkin
+    checkin_colleciton.create_index("suc.country")
     return db
