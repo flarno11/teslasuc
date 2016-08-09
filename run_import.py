@@ -155,13 +155,13 @@ def import_checkins(data):
                 'locationId': suc['locationId'],
                 'title': suc['title'],
                 'country': suc['country'],
-                'stalls': item[3],
+                'stalls': int(item[3]),
             },
             'checkin': {
                 'time': time,
-                'charging': item[4],
-                'waiting': item[5],
-                'blocked': item[6],
+                'charging': int(item[4]),
+                'waiting': int(item[5]),
+                'blocked': int(item[6]),
                 'notes': notes,
             },
             'submitter': {
