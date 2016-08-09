@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SuC legacy form submission</title>
+    <style>
+        body {
+            font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+{% if msg %}
+<h2>{{ msg }}</h2>
+{% endif %}
+
+<form action="/checkin?legacy=true" method="post">
+    <input type="hidden" name="stalls" value="0" />
+    <table>
+        <tr>
+            <td>SuperCharger:</td>
+            <td>
+                <select name="locationId">
+                <option></option>
+                {% for s in superChargers %}
+                    <option value="{{ s.locationId }}">{{ s.country }} {{ s.title }} ({{ s.stalls }})</option>
+                {% endfor %}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Charging (incl. you):</td>
+            <td><input name="charging" type="text" /></td>
+        </tr>
+        <tr>
+            <td>Waiting:</td>
+            <td><input name="waiting" type="text" value="0" /></td>
+        </tr>
+        <tr>
+            <td>Blocked:</td>
+            <td><input name="blocked" type="text" value="0" /></td>
+        </tr>
+        <tr>
+            <td>Time:</td>
+            <td><input name="time" type="text" value="{{ time }}" /></td>
+        </tr>
+        <tr>
+            <td>TFF Username:</td>
+            <td><input name="tffUserId" type="text" /></td>
+        </tr>
+        <tr>
+            <td>Notes (optional):</td>
+            <td><textarea name="notes"></textarea></td>
+        </tr>
+    </table>
+
+    <input type="submit" value="Submit" />
+</form>
+</body>
+</html>

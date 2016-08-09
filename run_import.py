@@ -1,10 +1,7 @@
 import json
-
-import pymongo
 import requests
 import re
 import datetime
-import pytz
 from pymongo.errors import DuplicateKeyError
 from pytz import timezone
 

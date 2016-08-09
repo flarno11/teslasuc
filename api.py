@@ -2,21 +2,26 @@ import re
 import json
 import datetime
 import os
+import urllib
 from datetime import timedelta
 
+import pymongo
 from flask.templating import render_template
 from flask import Flask, redirect, url_for, jsonify, request
 from bson.objectid import ObjectId
 from flask.wrappers import Response
+from pytz import timezone
 
 from config import setup_logging, setup_db
-from lib import TimeFormat, convert_time_fields, TimePattern, convert_to_csv
+from lib import TimeFormat, convert_time_fields, TimePattern, convert_to_csv, TimePatternSimple, TimeFormatSimple
 from run_import import run_import, import_checkins
 
 logger = setup_logging()
 db = setup_db()
 suc_collection = db.suc
 checkin_collection = db.checkin
+
+tz_utc = timezone('UTC')
 
 max_distance = 20000
 pattern_latlng = re.compile("(\d+\.\d+),(\d+\.\d+)")
@@ -57,8 +62,18 @@ def handle_invalid_usage(error):
 
 
 @app.route('/')
-def hello_world():
-    return app.send_static_file('index.html')
+def index():
+    if 'tesla' in request.headers.get('User-Agent').lower()\
+            or 'QtCarBrowser' in request.headers.get('User-Agent')\
+            or is_legacy():
+        return render_template('form.html',
+                               time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                               superChargers=suc_collection.find({'type': 'supercharger'}, {'locationId': True, 'title': True, 'country': True, 'stalls': True})
+                                                            .sort([('country', pymongo.ASCENDING), ('title', pymongo.ASCENDING)]),
+                               msg=request.args.get('msg', None)
+        )
+    else:
+        return app.send_static_file('index.html')
 
 
 @app.route('/sucImport', methods=['POST'])
@@ -89,10 +104,17 @@ def get_query_coords(lat, lng):
     return {'loc': {'$near': {'$geometry': {'type': "Point", 'coordinates': [lng, lat]}, '$maxDistance': max_distance,}}}
 
 
+def is_legacy():
+    return request.args.get('legacy', False)
+
+
 @app.route('/checkin', methods=['GET', 'POST'])
 def checkin():
     if request.method == 'POST':
-        client_data = request.get_json(force=True)
+        if is_legacy():
+            client_data = request.form
+        else:
+            client_data = request.get_json(force=True)
 
         if not all(k in client_data for k in ('time', 'locationId', 'stalls', 'charging', 'blocked', 'waiting', 'tffUserId', 'notes')):
             raise InvalidAPIUsage("Invalid data received", status_code=400)
@@ -104,11 +126,12 @@ def checkin():
         validated_data['notes'] = validate_str(client_data['notes'])
         validated_data['tffUserId'] = validate_str(client_data['tffUserId'])
 
+        location = validate_location(client_data['locationId'])
+
         for k in ['charging', 'blocked']:
-            if validated_data[k] > validated_data['stalls']:
+            if validated_data[k] > location['stalls']:
                 raise InvalidAPIUsage("Charging/blocked cannot be larger than stalls", status_code=400)
 
-        location = validate_location(client_data['locationId'], validated_data['stalls'])
         submission = {
             'suc': {
                 'locationId': location['locationId'],
@@ -132,7 +155,12 @@ def checkin():
         }
 
         checkin_collection.insert(submission)
-        return jsonify({'error': None})
+
+        if is_legacy():
+            s = "Checkin Nr. %d added, thank you." % checkin_collection.count()
+            return redirect('/?legacy=true&msg=' + urllib.parse.quote_plus(s))
+        else:
+            return jsonify({'error': None})
     else:
         query_param = request.args.get('filter', None)
         format = request.args.get('format', None)
@@ -190,9 +218,9 @@ def stats():
     ])
 
 
-def validate_location(location_id, stalls):
+def validate_location(location_id):
     location = suc_collection.find_one({'locationId': location_id})
-    if not location or location['stalls'] != stalls:
+    if not location:
         raise InvalidAPIUsage("Invalid location", status_code=400)
     return location
 
@@ -211,12 +239,22 @@ def validate_str(str, max_len=1000):
 
 
 def validate_date(s):
-    if not TimePattern.match(s):
+    if TimePattern.match(s):
+        d = datetime.datetime.strptime(s, TimeFormat)
+        d = tz_utc.localize(d)
+    elif TimePatternSimple.match(s):
+        d = datetime.datetime.strptime(s, TimeFormatSimple)
+        d = timezone("Europe/Zurich").localize(d)  # TODO use client timezone
+    else:
         raise InvalidAPIUsage("Invalid date", status_code=400)
-    d = datetime.datetime.strptime(s, TimeFormat)
-    one_hour_from_now = datetime.datetime.now() + timedelta(hours=1)
+
+    now_utc = tz_utc.localize(datetime.datetime.now())
+    one_hour_from_now = now_utc + timedelta(hours=1)
+    one_month_ago = now_utc - timedelta(days=30)
     if d > one_hour_from_now:
         raise InvalidAPIUsage("Time cannot be in the future", status_code=400)
+    elif d < one_month_ago:
+        raise InvalidAPIUsage("Time cannot be more than one month in the past", status_code=400)
 
     return d
 
