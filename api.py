@@ -139,7 +139,7 @@ def checkin():
         limit = request.args.get('limit', None)
 
         if query_param and len(query_param) > 0:
-            query = {'title': {'$regex': re.escape(query_param), '$options': '-i'}}
+            query = {'suc.title': {'$regex': re.escape(query_param), '$options': '-i'}}
         else:
             query = {}
 
