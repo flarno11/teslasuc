@@ -102,43 +102,46 @@
 
 <div ng-if="currentNavItem=='history'">
     <div ng-controller="historyController">
-    <md-list flex>
-        <md-subheader class="md-no-sticky">
-            Export <a href="/checkin">Json</a>/<a href="/checkin?format=csv">CSV</a><br />
-            <md-input-container class="tight">
-                <label>Filter</label>
-                <input ng-model="filterText">
-            </md-input-container>
-        </md-subheader>
-        <md-list-item class="md-3-line" ng-repeat="item in items" ng-click="null">
-          <img ng-src="" class="md-avatar" alt="" />
-          <div class="md-list-item-text" layout="column">
-            <h3><span md-highlight-text="filterText" md-highlight-flags="^i">{{item.suc.title}}</span></h3>
-            <h4 title="Stalls / Charging / Blocked / Waiting">{{ item.suc.stalls }} / {{ item.checkin.charging }} / {{ item.checkin.blocked }} / {{ item.checkin.waiting }}</h4>
-            <h4>{{ item.checkin.notes }}</h4>
-            <p>{{ item.checkin.time | date:'yyyy-MM-dd HH:mm Z' }}</p>
-          </div>
-        </md-list-item>
-    </md-list>
+        <md-list flex>
+            <md-subheader class="md-no-sticky">
+                Export <a href="/checkin">Json</a>/<a href="/checkin?format=csv">CSV</a><br />
+                <md-input-container class="tight">
+                    <label>Filter</label>
+                    <input ng-model="filterText">
+                </md-input-container>
+
+                <br /><br />
+                Format: Stalls / Charging / Blocked / Waiting
+            </md-subheader>
+            <md-list-item class="md-3-line" ng-repeat="item in items" ng-click="null">
+              <img ng-src="" class="md-avatar" alt="" />
+              <div class="md-list-item-text" layout="column">
+                <h3><span md-highlight-text="filterText" md-highlight-flags="^i">{{item.suc.title}}</span></h3>
+                <h4>{{ item.suc.stalls }} / {{ item.checkin.charging }} / {{ item.checkin.blocked }} / {{ item.checkin.waiting }}</h4>
+                <h4>{{ item.checkin.notes }}</h4>
+                <p>{{ item.checkin.time | date:'yyyy-MM-dd HH:mm Z' }}</p>
+              </div>
+            </md-list-item>
+        </md-list>
     </div>
 </div>
 
 <div ng-if="currentNavItem=='stats'">
     <div ng-controller="statsController">
-    <md-list flex>
-        <md-subheader class="md-no-sticky">
-        </md-subheader>
-        <md-list-item class="md-3-line" ng-repeat="item in items" ng-click="null">
-          <img ng-src="" class="md-avatar" alt="" />
-          <div class="md-list-item-text" layout="column">
-              <h3>{{ item.country }}</h3>
-              <h4>SuperChargers: {{ item.sucs }}<br />Check-ins: {{ item.checkins }}<br />Average utilization: {{ item.utilization * 100| number :0 }}%</h4>
-          </div>
-        </md-list-item>
-    </md-list>
+        <md-list flex>
+            <md-subheader class="md-no-sticky">
+            </md-subheader>
+            <md-list-item class="md-3-line" ng-repeat="item in items" ng-click="null">
+              <img ng-src="" class="md-avatar" alt="" />
+              <div class="md-list-item-text" layout="column">
+                  <h3>{{ item.country }}</h3>
+                  <h4>SuperChargers: {{ item.sucs }}<br />Check-ins: {{ item.checkins }}<br />Average utilization: {{ item.utilization * 100| number :0 }}%</h4>
+              </div>
+            </md-list-item>
+        </md-list>
 
-    <br />
-    Utilization = #charging / #stalls
+        <br />
+        Utilization = #charging / #stalls
     </div>
 </div>
 
