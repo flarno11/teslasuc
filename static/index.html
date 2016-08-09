@@ -132,10 +132,13 @@
           <img ng-src="" class="md-avatar" alt="" />
           <div class="md-list-item-text" layout="column">
               <h3>{{ item.country }}</h3>
-              <h4>SuperChargers: {{ item.sucs }}<br />Check-ins: {{ item.checkins }}</h4>
+              <h4>SuperChargers: {{ item.sucs }}<br />Check-ins: {{ item.checkins }}<br />Average utilization: {{ item.utilization * 100| number :0 }}%</h4>
           </div>
         </md-list-item>
     </md-list>
+
+    <br />
+    Utilization = #charging / #stalls
     </div>
 </div>
 

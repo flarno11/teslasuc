@@ -164,9 +164,11 @@ def checkin_import():
 
 @app.route('/stats', methods=['GET'])
 def stats():
-    checkins = {r['_id']: r['checkins']
+    checkins = {r['_id']: {'checkins': r['checkins'], 'utilization': r['utilization']}
                  for r in checkin_collection.aggregate([
-                    {'$group': {'_id': '$suc.country', 'checkins': {'$sum': 1}}}
+                    {'$group': {'_id': '$suc.country',
+                                'checkins': {'$sum': 1},
+                                'utilization': {'$avg': {'$divide': ['$checkin.charging', '$suc.stalls' ]}}}}
                 ])
                  }
 
@@ -180,7 +182,11 @@ def stats():
             }
 
     return jsonify([
-        {'country': c, 'sucs': sucs[c], 'checkins': checkins[c]} for c in countries
+        {'country': c,
+         'sucs': sucs[c],
+         'checkins': checkins[c]['checkins'],
+         'utilization': checkins[c]['utilization']}
+        for c in countries
     ])
 
 
