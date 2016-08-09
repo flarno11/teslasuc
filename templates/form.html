@@ -15,6 +15,12 @@
 <h2>{{ msg }}</h2>
 {% endif %}
 
+{% for c in countries %}
+<a href="/?legacy=true&country={{ c }}">{{ c}}</a>
+{% endfor %}
+<a href="/?legacy=true&country=others">All others</a>
+<br /><br />
+
 <form action="/checkin?legacy=true" method="post">
     <input type="hidden" name="stalls" value="0" />
     <table>

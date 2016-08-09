@@ -66,10 +66,31 @@ def index():
     if 'tesla' in request.headers.get('User-Agent').lower()\
             or 'QtCarBrowser' in request.headers.get('User-Agent')\
             or is_legacy():
+
+        country = validate_str(request.args.get('country', ''), max_len=100)
+
+        countries = [s['_id'] for s in suc_collection.aggregate([
+            {'$match': {'type': 'supercharger'}},
+            {'$group': {'_id': '$country', 'count': {'$sum': 1}}},
+            {'$match': {'count': {'$gte': 4}}},
+            {'$sort': {'_id': 1}}
+        ])]
+
+        query = {'type': 'supercharger'}
+        if country:
+            if country == 'others':
+                query['country'] = {'$nin': countries}
+            else:
+                query['country'] = country
+
+        super_chargers = suc_collection\
+            .find(query, {'locationId': True, 'title': True, 'country': True, 'stalls': True})\
+            .sort([('country', pymongo.ASCENDING), ('title', pymongo.ASCENDING)])
+
         return render_template('form.html',
-                               time=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
-                               superChargers=suc_collection.find({'type': 'supercharger'}, {'locationId': True, 'title': True, 'country': True, 'stalls': True})
-                                                            .sort([('country', pymongo.ASCENDING), ('title', pymongo.ASCENDING)]),
+                               countries=countries,
+                               time=datetime.datetime.now().strftime(TimeFormatSimple),
+                               superChargers=super_chargers,
                                msg=request.args.get('msg', None)
         )
     else:
@@ -232,10 +253,12 @@ def validate_int(s):
     return val
 
 
-def validate_str(str, max_len=1000):
-    if len(str) > max_len:
+def validate_str(s, max_len=1000):
+    if not isinstance(s, str):
+        raise InvalidAPIUsage("Value is not a string", status_code=400)
+    if len(s) > max_len:
         raise InvalidAPIUsage("Text too long", status_code=400)
-    return str
+    return s
 
 
 def validate_date(s):
