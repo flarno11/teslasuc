@@ -198,7 +198,7 @@ def checkin():
         results = [c for c in res]
 
         if format == 'csv':
-            response = Response(convert_to_csv(results), mimetype='application/csv')
+            response = Response(convert_to_csv([{'locationId': r['suc']['locationId'], 'stalls': r['suc']['stalls'], 'time': r['checkin']['time'], 'charging': r['checkin']['charging'], 'blocked': r['checkin']['blocked'], 'waiting': r['checkin']['waiting']} for r in results]), mimetype='application/csv')
             response.headers["Content-Disposition"] = "attachment; filename=checkins.csv"
             return response
         else:
