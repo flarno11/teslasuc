@@ -239,6 +239,45 @@ def stats():
     ])
 
 
+@app.route('/stats/country/<country>', methods=['GET'])
+def stats_country(country):
+    checkins = {r['_id']: {'checkins': r['checkins'], 'utilization': r['utilization']}
+                 for r in checkin_collection.aggregate([
+                    {'$match': {'suc.country': country}},
+                    {'$group': {'_id': '$suc.locationId',
+                                'checkins': {'$sum': 1},
+                                'utilization': {'$avg': {'$divide': ['$checkin.charging', '$suc.stalls' ]}}}}
+                ])
+                }
+
+    def create_item(location):
+        if location['locationId'] in checkins:
+            c = checkins[location['locationId']]
+        else:
+            c = {'checkins': 0, 'utilization': None}
+
+        return {
+            'locationId': location['locationId'],
+            'title': location['title'],
+            'stalls': location['stalls'],
+            'checkins': c['checkins'],
+            'utilization': c['utilization'],
+        }
+
+    return jsonify([create_item(c) for c in suc_collection.find({'type': 'supercharger', 'country': country}).sort('title')])
+
+
+@app.route('/stats/superCharger/<location_id>', methods=['GET'])
+def stats_super_charger(location_id):
+    return jsonify([{
+        'time': c['checkin']['time'],
+        'stalls': c['suc']['stalls'],
+        'charging': c['checkin']['charging'],
+        'waiting': c['checkin']['waiting'],
+        'blocked': c['checkin']['blocked'],
+    } for c in checkin_collection.find({'suc.locationId': location_id}).sort('checkin.time')])
+
+
 def validate_location(location_id):
     location = suc_collection.find_one({'locationId': location_id})
     if not location:

@@ -1,4 +1,4 @@
-angular.module("myApp", ['ngMaterial'])
+angular.module("myApp", ['ngMaterial', 'suc.charts',])
 
 .config(function($mdThemingProvider) {
   $mdThemingProvider.theme('default')
@@ -175,17 +175,63 @@ angular.module("myApp", ['ngMaterial'])
 })
 
 .controller('statsController', function($scope, $http, $log) {
-    $scope.items = [];
+    $scope.countries = [];
 
-    $scope.loadStats = function() {
+    $scope.country = undefined;
+    $scope.superChargers = [];
+
+    $scope.superCharger = undefined;
+    $scope.superChargerStats = [];
+
+    var loadStats = function() {
+        $scope.setCountry(undefined);
         $http.get('/stats').then(function successCallback(response) {
-            $scope.items = response.data;
+            $scope.countries = response.data;
           }, function errorCallback(response) {
             $log.error(response);
         });
     };
 
-    $scope.loadStats();
+    $scope.setCountry = function(country) {
+        $scope.country = country;
+        $scope.setSuperCharger(undefined);
+        if ($scope.country == undefined) {
+            $scope.superChargers = [];
+        } else {
+            $http.get('/stats/country/' + $scope.country).then(function successCallback(response) {
+                $scope.superChargers = response.data;
+            }, function errorCallback(response) {
+                $log.error(response);
+            });
+        }
+    };
+
+    $scope.setSuperCharger = function(suc) {
+        $scope.superCharger = suc;
+        if ($scope.superCharger == undefined) {
+            $scope.superChargerStats = [];
+        } else {
+            $http.get('/stats/superCharger/' + $scope.superCharger.locationId).then(function successCallback(response) {
+                var r = response.data.map(function (d) {
+                    return [moment(d.time).toDate(), d.stalls, d.charging, d.blocked, d.waiting];
+                });
+                r.unshift(["Time", "Stalls", "Charging", "Blocked", "Waiting"]);
+                $scope.superChargerStats = r;
+                console.log($scope.superChargerStats);
+            }, function errorCallback(response) {
+                $log.error(response);
+            });
+        }
+    };
+
+    loadStats();
+
+
+    $scope.superChargerChartOptions = {
+        my_firstRowContainsLabels: true,
+        displayAnnotations: true
+    };
+
 })
 
 ;

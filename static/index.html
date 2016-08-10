@@ -128,20 +128,47 @@
 
 <div ng-if="currentNavItem=='stats'">
     <div ng-controller="statsController">
-        <md-list flex>
-            <md-subheader class="md-no-sticky">
-            </md-subheader>
-            <md-list-item class="md-3-line" ng-repeat="item in items" ng-click="null">
-              <img ng-src="" class="md-avatar" alt="" />
-              <div class="md-list-item-text" layout="column">
-                  <h3>{{ item.country }}</h3>
-                  <h4>SuperChargers: {{ item.sucs }}<br />Check-ins: {{ item.checkins }}<br />Average utilization: {{ item.utilization * 100| number :0 }}%</h4>
-              </div>
-            </md-list-item>
-        </md-list>
 
-        <br />
-        Utilization = #charging / #stalls
+        <md-button ng-click="setCountry(undefined)">Overview</md-button>
+        <md-button ng-if="country" ng-click="setSuperCharger(undefined)">{{ country }}</md-button>
+        <md-button ng-if="superCharger">{{ superCharger.title }}</md-button>
+
+        <div ng-if="country == undefined && superCharger == undefined">
+            <md-list flex>
+                <md-list-item class="md-3-line" ng-repeat="c in countries" ng-click="setCountry(c.country)">
+                  <img ng-src="" class="md-avatar" alt="" />
+                  <div class="md-list-item-text" layout="column">
+                      <h3>{{ c.country }}</h3>
+                      <h4>SuperChargers: {{ c.sucs }}<br />Check-ins: {{ c.checkins }}<br />Average utilization: {{ c.utilization * 100| number :0 }}%</h4>
+                  </div>
+                </md-list-item>
+            </md-list>
+
+            <br />
+            Utilization = #charging / #stalls
+        </div>
+        <div ng-if="country != undefined && superCharger == undefined">
+            <md-list flex>
+                <md-subheader class="md-no-sticky">
+                </md-subheader>
+                <md-list-item class="md-3-line" ng-repeat="suc in superChargers" ng-click="setSuperCharger(suc)">
+                  <img ng-src="" class="md-avatar" alt="" />
+                  <div class="md-list-item-text" layout="column">
+                      <h3>{{ suc.title }}</h3>
+                      <h4>Stalls: {{ suc.stalls }}<br />
+                          Check-ins: {{ suc.checkins }}<br />
+                          Average utilization: {{ suc.utilization * 100| number :0 }}%
+                      </h4>
+                  </div>
+                </md-list-item>
+            </md-list>
+
+            <br />
+            Utilization = #charging / #stalls
+        </div>
+        <div ng-if="superCharger != undefined">
+            <div data-google-chart style="height: 300px;" data-chart-y-title="" data-chart-type="AnnotationChart" data-chart-data="superChargerStats" data-chart-options="superChargerChartOptions"></div>
+        </div>
     </div>
 </div>
 
@@ -149,6 +176,7 @@
     </div>
 
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-animate.min.js"></script>
@@ -156,5 +184,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-messages.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc.5/angular-material.min.js"></script>
     <script src="/static/app.js"></script>
+    <script src="/static/charts.js"></script>
 </body>
 </html>
