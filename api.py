@@ -247,7 +247,7 @@ def validate_location(location_id):
 
 
 def validate_int(s):
-    if not s:
+    if isinstance(s, str) and not s:  # check for empty string, but s can also be an int when coming from json
         raise InvalidAPIUsage("Invalid number", status_code=400)
     val = int(s)
     if val < 0:
