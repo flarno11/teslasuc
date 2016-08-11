@@ -92,7 +92,8 @@ def index():
                                countries=countries,
                                time=tz_utc.localize(datetime.datetime.utcnow()).astimezone(tz_zurich).strftime(TimeFormatSimple),
                                superChargers=super_chargers,
-                               msg=request.args.get('msg', None)
+                               msg=request.args.get('msg', None),
+                               tffUserId=request.args.get('tffUserId', '')
         )
     else:
         return app.send_static_file('index.html')
