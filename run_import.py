@@ -12,21 +12,21 @@ db = setup_db()
 suc_collection = db.suc
 checkin_collection = db.checkin
 
-pattern_suc = re.compile(".*(\d+) Supercharger.*", re.DOTALL)
-pattern_dc = re.compile(".*(\d+) Tesla Connector.*", re.DOTALL)
+pattern_suc = re.compile("(\d+) Supercharger", re.DOTALL)
+pattern_dc = re.compile("(\d+) Tesla Connector", re.DOTALL)
 
 tz_zurich = timezone('Europe/Zurich')
 tz_utc = timezone('UTC')
 
 
 def chargers(s):
-    m = pattern_suc.match(s)
-    if m:
-        return int(m.group(1))
+    m = pattern_suc.findall(s)
+    if len(m) > 0:
+        return int(m[0])
 
-    m = pattern_dc.match(s)
-    if m:
-        return int(m.group(1))
+    m = pattern_dc.findall(s)
+    if len(m):
+        return int(m[0])
 
     logger.warn("No chargers found from %s" % s)
     return None
