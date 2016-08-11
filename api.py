@@ -22,6 +22,7 @@ suc_collection = db.suc
 checkin_collection = db.checkin
 
 tz_utc = timezone('UTC')
+tz_zurich = timezone("Europe/Zurich")
 
 max_distance = 20000
 pattern_latlng = re.compile("(\d+\.\d+),(\d+\.\d+)")
@@ -89,7 +90,7 @@ def index():
 
         return render_template('form.html',
                                countries=countries,
-                               time=datetime.datetime.now().strftime(TimeFormatSimple),
+                               time=tz_utc.localize(datetime.datetime.utcnow()).astimezone(tz_zurich).strftime(TimeFormatSimple),
                                superChargers=super_chargers,
                                msg=request.args.get('msg', None)
         )
@@ -163,7 +164,7 @@ def checkin():
             'submitter': {
                 'userAgent': request.headers.get('User-Agent'),
                 'ip': request.remote_addr,
-                'time': datetime.datetime.now(),
+                'time': tz_utc.localize(datetime.datetime.utcnow()),
                 'tffUserId': validated_data['tffUserId'],
             },
             'checkin': {
@@ -214,12 +215,12 @@ def checkin_import():
 @app.route('/stats', methods=['GET'])
 def stats():
     checkins = {r['_id']: {'checkins': r['checkins'], 'utilization': r['utilization']}
-                 for r in checkin_collection.aggregate([
+                for r in checkin_collection.aggregate([
                     {'$group': {'_id': '$suc.country',
                                 'checkins': {'$sum': 1},
                                 'utilization': {'$avg': {'$divide': ['$checkin.charging', '$suc.stalls' ]}}}}
                 ])
-                 }
+                }
 
     countries = sorted(list(checkins.keys()))
 
@@ -308,11 +309,11 @@ def validate_date(s):
         d = tz_utc.localize(d)
     elif TimePatternSimple.match(s):
         d = datetime.datetime.strptime(s, TimeFormatSimple)
-        d = timezone("Europe/Zurich").localize(d)  # TODO use client timezone
+        d = tz_zurich.localize(d)  # TODO use client timezone
     else:
         raise InvalidAPIUsage("Invalid date", status_code=400)
 
-    now_utc = tz_utc.localize(datetime.datetime.now())
+    now_utc = tz_utc.localize(datetime.datetime.utcnow())
     one_hour_from_now = now_utc + timedelta(hours=1)
     one_month_ago = now_utc - timedelta(days=30)
     if d > one_hour_from_now:

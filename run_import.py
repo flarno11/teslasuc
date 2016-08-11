@@ -16,6 +16,7 @@ pattern_suc = re.compile(".*(\d+) Supercharger.*", re.DOTALL)
 pattern_dc = re.compile(".*(\d+) Tesla Connector.*", re.DOTALL)
 
 tz_zurich = timezone('Europe/Zurich')
+tz_utc = timezone('UTC')
 
 
 def chargers(s):
@@ -184,4 +185,5 @@ def run_import():
 
 if __name__ == "__main__":
     #import_chargings("06/23/2013,13:15,Neuberg,6,3,0,0\n07/09/2014,18:20,Schweitenkirchen,8,2,0,0\n")
-    run_import()
+    #run_import()
+    pass
