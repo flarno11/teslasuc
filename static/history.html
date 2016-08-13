@@ -1,7 +1,8 @@
-<md-progress-circular md-mode="indeterminate" ng-if="loading"></md-progress-circular>
 <md-list flex>
     <md-subheader class="md-no-sticky">
-        Export <a href="/checkin">Json</a>/<a href="/checkin?format=csv">CSV</a><br />
+        Export <a href="/checkin">Json</a>/<a href="/checkin?format=csv">CSV</a>
+        <md-progress-circular md-mode="indeterminate" ng-if="loading"></md-progress-circular>
+        <br />
         <md-input-container class="tight">
             <label>Filter</label>
             <input ng-model="filterText">

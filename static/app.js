@@ -213,9 +213,9 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
     });
 
     $scope.loadHistory = function() {
-        $scope.locating = true;
+        $scope.loading = true;
         $http.get('/checkin?limit=50&filter='+$scope.filterText).then(function successCallback(response) {
-            $scope.locating = false;
+            $scope.loading = false;
             $scope.items = response.data;
           }, function errorCallback(response) {
             $scope.locating = false;
