@@ -35,5 +35,6 @@ def setup_db():
     checkin_colleciton = db.checkin
     checkin_colleciton.create_index("suc.country")
     checkin_colleciton.create_index("checkin.time")
+    checkin_colleciton.create_index("submitter.time")
     checkin_colleciton.create_index("suc.locationId")
     return db

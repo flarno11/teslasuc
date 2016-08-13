@@ -13,162 +13,12 @@
     <div layout="column" ng-cloak>
         <md-content class="md-padding">
             <md-nav-bar md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links">
-            <md-nav-item md-nav-click="goto('submit')" name="submit">Submit</md-nav-item>
-            <md-nav-item md-nav-click="goto('history')" name="history">History</md-nav-item>
-            <md-nav-item md-nav-click="goto('stats')" name="stats">Stats</md-nav-item>
+            <md-nav-item md-nav-href="#/" name="checkin">Checkin</md-nav-item>
+            <md-nav-item md-nav-href="#/history" name="history">History</md-nav-item>
+            <md-nav-item md-nav-href="#/stats" name="stats">Stats</md-nav-item>
             </md-nav-bar>
 
-
-<div ng-if="currentNavItem=='submit'">
-    <form ng-controller="teslaController as ctrl" ng-submit="$event.preventDefault()" name="myForm">
-
-    <br />
-    <button ng-click="locate()">Locate me</button>
-    <md-progress-circular md-mode="indeterminate" ng-if="locating"></md-progress-circular>
-
-    <md-autocomplete
-      id="auto_complete_id"
-      md-selected-item="ctrl.selectedItem"
-      md-search-text-change="ctrl.searchTextChange(searchText)"
-      md-search-text="searchText"
-      md-selected-item-change="ctrl.selectedItemChange(item)"
-      md-items="item in ctrl.querySearch(searchText)"
-      md-item-text="item.title"
-      md-min-length="3"
-      placeholder="SuperCharger">
-    <md-item-template>
-      <span md-highlight-text="searchText" md-highlight-flags="^i">{{item.title}}</span>
-    </md-item-template>
-    <md-not-found>
-      No results found
-    </md-not-found>
-    </md-autocomplete>
-    <br/>
-
-
-    <md-input-container class="md-block">
-        <label>Stalls total</label>
-        <input required type="number" step="1" name="stalls" ng-model="item.stalls" readonly="readonly" />
-    </md-input-container>
-    <md-input-container class="md-block">
-        <label>Charging (incl. you)</label>
-        <input required type="number" step="1" name="charging" ng-model="item.charging" min="0" max="10" />
-    </md-input-container>
-    <md-input-container class="md-block">
-        <label>Blocked</label>
-        <input required type="number" step="1" name="blocked" ng-model="item.blocked" min="0" max="10" />
-    </md-input-container>
-    <md-input-container class="md-block">
-        <label>Waiting</label>
-        <input required type="number" step="1" name="waiting" ng-model="item.waiting" min="0" />
-    </md-input-container>
-
-    <!--<md-datepicker ng-model="item.date" name="date" md-placeholder="Enter date">
-    </md-datepicker>-->
-
-    <md-input-container>
-        <label>Date</label>
-        <input required type="date" ng-model="date" name="date">
-    </md-input-container>
-
-    <md-input-container>
-        <label>Time</label>
-        <input required type="time" ng-model="time" name="time">
-    </md-input-container>
-    <br />
-
-    <md-input-container class="md-block">
-        <label>TFF Username</label>
-        <input required type="text" name="tffUserId" ng-model="tffUserId" max="1000" />
-    </md-input-container>
-
-    <md-input-container class="md-block">
-        <label>Notes</label>
-        <input type="text" name="notes" ng-model="item.notes" max="1000" />
-    </md-input-container>
-
-
-    <md-button class="md-raised" ng-click="submit()" ng-disabled="item == undefined || submitting || !myForm.$valid">Submit</md-button>
-
-    <!--<br /><br /><br />
-    myForm.time.$valid = {{myForm.time.$valid}}<br/>
-    myForm.time.$error = {{myForm.time.$error}}<br/>
-    myForm.$valid = {{myForm.$valid}}<br/>
-    myForm.$error = {{myForm.$error}}<br/>
-    myForm.$error.required = {{!!myForm.$error.required}}<br/>-->
-
-    </form>
-</div>
-
-<div ng-if="currentNavItem=='history'">
-    <div ng-controller="historyController">
-        <md-list flex>
-            <md-subheader class="md-no-sticky">
-                Export <a href="/checkin">Json</a>/<a href="/checkin?format=csv">CSV</a><br />
-                <md-input-container class="tight">
-                    <label>Filter</label>
-                    <input ng-model="filterText">
-                </md-input-container>
-
-                <br /><br />
-                Format: Stalls / Charging / Blocked / Waiting
-            </md-subheader>
-            <md-list-item class="md-3-line" ng-repeat="item in items" ng-click="null">
-              <img ng-src="" class="md-avatar" alt="" />
-              <div class="md-list-item-text" layout="column">
-                <h3><span md-highlight-text="filterText" md-highlight-flags="^i">{{item.suc.title}}</span></h3>
-                <h4>{{ item.suc.stalls }} / {{ item.checkin.charging }} / {{ item.checkin.blocked }} / {{ item.checkin.waiting }}</h4>
-                <h4>{{ item.checkin.notes }}</h4>
-                <p>{{ item.checkin.time | date:'yyyy-MM-dd HH:mm Z' }}</p>
-              </div>
-            </md-list-item>
-        </md-list>
-    </div>
-</div>
-
-<div ng-if="currentNavItem=='stats'">
-    <div ng-controller="statsController">
-
-        <md-button ng-click="setCountry(undefined)">Overview</md-button>
-        <md-button ng-if="country" ng-click="setSuperCharger(undefined)">{{ country }}</md-button>
-        <md-button ng-if="superCharger">{{ superCharger.title }}</md-button>
-
-        <div ng-if="country == undefined && superCharger == undefined">
-            <md-list flex>
-                <md-list-item class="md-3-line" ng-repeat="c in countries" ng-click="setCountry(c.country)">
-                  <img ng-src="" class="md-avatar" alt="" />
-                  <div class="md-list-item-text" layout="column">
-                      <h3>{{ c.country }}</h3>
-                      <h4>SuperChargers: {{ c.sucs }}<br />Check-ins: {{ c.checkins }}<br />Average utilization: {{ c.utilization * 100| number :0 }}%</h4>
-                  </div>
-                </md-list-item>
-            </md-list>
-
-            <br />
-            Utilization = #charging / #stalls
-        </div>
-        <div ng-if="country != undefined && superCharger == undefined">
-            <md-list flex>
-                <md-list-item class="md-3-line" ng-repeat="suc in superChargers" ng-click="setSuperCharger(suc)">
-                  <img ng-src="" class="md-avatar" alt="" />
-                  <div class="md-list-item-text" layout="column">
-                      <h3>{{ suc.title }}</h3>
-                      <h4>Stalls: {{ suc.stalls }}<br />
-                          Check-ins: {{ suc.checkins }}<br />
-                          Average utilization: {{ suc.utilization * 100| number :0 }}%
-                      </h4>
-                  </div>
-                </md-list-item>
-            </md-list>
-
-            <br />
-            Utilization = #charging / #stalls
-        </div>
-        <div ng-if="superCharger != undefined">
-            <div data-google-chart style="height: 300px;" data-chart-y-title="" data-chart-type="AnnotationChart" data-chart-data="superChargerStats" data-chart-options="superChargerChartOptions"></div>
-        </div>
-    </div>
-</div>
+            <ng-view></ng-view>
 
       </md-content>
     </div>
@@ -180,6 +30,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-animate.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-aria.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-messages.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-route.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc.5/angular-material.min.js"></script>
     <script src="/static/app.js"></script>
     <script src="/static/charts.js"></script>

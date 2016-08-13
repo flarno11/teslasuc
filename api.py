@@ -4,6 +4,7 @@ import datetime
 import os
 import urllib
 from datetime import timedelta
+from time import sleep
 
 import pymongo
 from flask.templating import render_template
@@ -271,13 +272,17 @@ def stats_country(country):
 
 @app.route('/stats/superCharger/<location_id>', methods=['GET'])
 def stats_super_charger(location_id):
-    return jsonify([{
+    location = suc_collection.find_one({'locationId': location_id})
+    if not location:
+        raise InvalidAPIUsage("Not found", status_code=404)
+
+    return jsonify({"title": location['title'], "country": location['country'], "items": [{
         'time': c['checkin']['time'],
         'stalls': c['suc']['stalls'],
         'charging': c['checkin']['charging'],
         'waiting': c['checkin']['waiting'],
         'blocked': c['checkin']['blocked'],
-    } for c in checkin_collection.find({'suc.locationId': location_id}).sort('checkin.time')])
+    } for c in checkin_collection.find({'suc.locationId': location_id}).sort('checkin.time')]})
 
 
 def validate_location(location_id):

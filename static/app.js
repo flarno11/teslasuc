@@ -1,9 +1,40 @@
-angular.module("myApp", ['ngMaterial', 'suc.charts',])
+angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
 
 .config(function($mdThemingProvider) {
   $mdThemingProvider.theme('default')
     .primaryPalette('red')
     .accentPalette('red');
+})
+.config(function($mdProgressCircularProvider) {
+  $mdProgressCircularProvider.configure({
+    progressSize: 20,
+  });
+})
+
+.config(function($routeProvider) {
+    $routeProvider
+    .when("/", {
+        templateUrl : "/static/checkin.html"
+        //controller : "checkinController"
+    })
+    .when("/history", {
+        templateUrl : "/static/history.html",
+        controller : "historyController"
+    })
+    .when("/stats", {
+        templateUrl : "/static/stats.html",
+        controller : "statsController"
+    })
+    .when("/stats/country/:country", {
+        templateUrl : "/static/stats.html",
+        //controller : "statsCountryController"
+        controller : "statsController"
+    })
+    .when("/stats/superCharger/:superCharger", {
+        templateUrl : "/static/stats.html",
+        //controller : "statsSuCController"
+        controller : "statsController"
+    });
 })
 
 .service('toaster', function($mdToast) {
@@ -40,11 +71,28 @@ angular.module("myApp", ['ngMaterial', 'suc.charts',])
     };
 })
 
-.controller('navController', function($scope) {
-    $scope.currentNavItem = 'submit';
+.controller('navController', function($scope, $location, $log) {
+    $scope.defaultNavItem = 'checkin';
+
+    $scope.updateNav = function() {
+        var p = $location.path().split('/');
+        $scope.currentNavItem = (p.length < 2 || p[1] == "") ? $scope.defaultNavItem : p[1];
+    };
+
+    $scope.$on('$locationChangeSuccess', function(event, newUrl) {
+        $log.debug('locationChangeSuccess ' + $location.path());
+        $scope.updateNav();
+    });
+
+    $scope.updateNav();
+
+    $log.debug('start currentNavItem=' + $scope.currentNavItem);
+
+    $scope.country = '';
+    $scope.superCharger = '';
 })
 
-.controller('teslaController', function($scope, $q, $log, $http, $timeout, $window, toaster) {
+.controller('checkinController', function($scope, $q, $log, $http, $timeout, $window, toaster) {
     $scope.position = "";
     $scope.locating = false;
     $scope.item = undefined;
@@ -156,6 +204,7 @@ angular.module("myApp", ['ngMaterial', 'suc.charts',])
 
 
 .controller('historyController', function($scope, $http, $log) {
+    $scope.loading = false;
     $scope.filterText = "";
     $scope.items = [];
 
@@ -164,27 +213,52 @@ angular.module("myApp", ['ngMaterial', 'suc.charts',])
     });
 
     $scope.loadHistory = function() {
-        $http.get('/checkin?limit=500&filter='+$scope.filterText).then(function successCallback(response) {
+        $scope.locating = true;
+        $http.get('/checkin?limit=50&filter='+$scope.filterText).then(function successCallback(response) {
+            $scope.locating = false;
             $scope.items = response.data;
           }, function errorCallback(response) {
+            $scope.locating = false;
             $log.error(response);
         });
     };
 
-    $scope.loadHistory();
+    // for some reason the watch on filterText is also triggered when the template is loaded, so we can omit this call
+    //$scope.loadHistory();
 })
 
-.controller('statsController', function($scope, $http, $log) {
-    $scope.countries = [];
+.controller('statsController', function($scope, $http, $log, $location, $routeParams) {
+    $scope.loading = false;
 
-    $scope.country = undefined;
+    $scope.countries = [];
     $scope.superChargers = [];
 
-    $scope.superCharger = undefined;
-    $scope.superChargerStats = [];
+    $log.info("stats init country=" + $scope.$parent.country + ", superCharger=" + $scope.$parent.superCharger);
 
-    var loadStats = function() {
-        $scope.setCountry(undefined);
+    /* not needed since statsController is re-initialized for each /stats/.. route
+    $scope.$on('$locationChangeSuccess', function(event, newUrl) {
+        $log.debug('locationChangeSuccess ' + $location.path());
+        $scope.updateRoute();
+    });*/
+
+    $scope.updateRoute = function() {
+        if ('country' in $routeParams) {
+            $scope.$parent.country = $routeParams.country;
+            $scope.$parent.superCharger = undefined;
+            $scope.loadCountry();
+        } else if ('superCharger' in $routeParams) {
+            $scope.$parent.superCharger = $routeParams.superCharger;
+            $scope.loadSuperCharger();
+        } else {
+            $scope.$parent.country = undefined;
+            $scope.$parent.superCharger = undefined;
+            $scope.loadStats();
+        }
+        $log.info("stats country=" + $scope.$parent.country + ", superCharger=" + $scope.$parent.superCharger);
+    };
+
+
+    $scope.loadStats = function() {
         $http.get('/stats').then(function successCallback(response) {
             $scope.countries = response.data;
           }, function errorCallback(response) {
@@ -192,46 +266,43 @@ angular.module("myApp", ['ngMaterial', 'suc.charts',])
         });
     };
 
-    $scope.setCountry = function(country) {
-        $scope.country = country;
-        $scope.setSuperCharger(undefined);
-        if ($scope.country == undefined) {
-            $scope.superChargers = [];
-        } else {
-            $http.get('/stats/country/' + $scope.country).then(function successCallback(response) {
-                $scope.superChargers = response.data;
-            }, function errorCallback(response) {
-                $log.error(response);
-            });
-        }
+    $scope.loadCountry = function() {
+        $scope.loading = true;
+        $http.get('/stats/country/' + $scope.$parent.country).then(function successCallback(response) {
+            $scope.loading = false;
+            $scope.superChargers = response.data;
+        }, function errorCallback(response) {
+            $scope.loading = false;
+            $log.error(response);
+        });
     };
 
-    $scope.setSuperCharger = function(suc) {
-        $scope.superCharger = suc;
-        if ($scope.superCharger == undefined) {
-            $scope.superChargerStats = [];
-        } else {
-            $http.get('/stats/superCharger/' + $scope.superCharger.locationId).then(function successCallback(response) {
-                var r = response.data.map(function (d) {
-                    return [moment(d.time).toDate(), d.stalls, d.charging, d.blocked, d.waiting];
-                });
-                r.unshift(["Time", "Stalls", "Charging", "Blocked", "Waiting"]);
-                $scope.superChargerStats = r;
-                console.log($scope.superChargerStats);
-            }, function errorCallback(response) {
-                $log.error(response);
+    $scope.loadSuperCharger = function() {
+        $scope.loading = true;
+        $http.get('/stats/superCharger/' + $scope.$parent.superCharger).then(function successCallback(response) {
+            $scope.loading = false;
+            $scope.superChargerTitle = response.data.title;
+            if ($scope.$parent.country != response.data.country) {
+                $scope.$parent.country = response.data.country;
+            }
+            var r = response.data.items.map(function (d) {
+                return [moment(d.time).toDate(), d.stalls, d.charging, d.blocked, d.waiting];
             });
-        }
+            r.unshift(["Time", "Stalls", "Charging", "Blocked", "Waiting"]);
+            $scope.superChargerStats = r;
+            console.log('superChargerStats', $scope.superChargerStats);
+        }, function errorCallback(response) {
+            $scope.loading = false;
+            $log.error(response);
+        });
     };
-
-    loadStats();
-
 
     $scope.superChargerChartOptions = {
         my_firstRowContainsLabels: true,
         displayAnnotations: true
     };
 
+    $scope.updateRoute();
 })
 
 ;

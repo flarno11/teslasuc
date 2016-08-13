@@ -1,0 +1,42 @@
+<md-button ng-href="#/stats">Overview</md-button>
+<md-button ng-if="country" ng-href="#/stats/country/{{ country }}">{{ country }}</md-button>
+<md-button ng-if="superChargerTitle" ng-href="#/stats/superCharger/{{ superCharger }}">{{ superChargerTitle }}</md-button>
+
+<md-progress-circular md-mode="indeterminate" ng-if="loading"></md-progress-circular>
+
+<div ng-if="country == undefined && superCharger == undefined">
+    <md-list flex>
+        <md-list-item class="md-3-line" ng-repeat="c in countries" ng-href="#/stats/country/{{ c.country }}">
+          <img ng-src="" class="md-avatar" alt="" />
+          <div class="md-list-item-text" layout="column">
+              <h3>{{ c.country }}</h3>
+              <h4>SuperChargers: {{ c.sucs }}<br />Check-ins: {{ c.checkins }}<br />Average utilization: {{ c.utilization * 100| number :0 }}%</h4>
+          </div>
+        </md-list-item>
+    </md-list>
+
+    <br />
+    Utilization = #charging / #stalls
+</div>
+
+<div ng-if="country != undefined && superCharger == undefined">
+    <md-list flex>
+        <md-list-item class="md-3-line" ng-repeat="suc in superChargers" ng-href="#/stats/superCharger/{{ suc.locationId }}">
+          <img ng-src="" class="md-avatar" alt="" />
+          <div class="md-list-item-text" layout="column">
+              <h3>{{ suc.title }}</h3>
+              <h4>Stalls: {{ suc.stalls }}<br />
+                  Check-ins: {{ suc.checkins }}<br />
+                  Average utilization: {{ suc.utilization * 100| number :0 }}%
+              </h4>
+          </div>
+        </md-list-item>
+    </md-list>
+
+    <br />
+    Utilization = #charging / #stalls
+</div>
+
+<div ng-if="superCharger != undefined">
+    <div data-google-chart style="height: 300px;" data-chart-y-title="" data-chart-type="AnnotationChart" data-chart-data="superChargerStats" data-chart-options="superChargerChartOptions"></div>
+</div>
