@@ -27,12 +27,10 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
     })
     .when("/stats/country/:country", {
         templateUrl : "/static/stats.html",
-        //controller : "statsCountryController"
         controller : "statsController"
     })
     .when("/stats/superCharger/:superCharger", {
         templateUrl : "/static/stats.html",
-        //controller : "statsSuCController"
         controller : "statsController"
     });
 })

@@ -39,6 +39,8 @@ def import_from_url(url, type):
 
     logger.debug('parsing type=%s, code=%d, url=%s' % (type, res.status_code, url))
     results = json.loads(res.text)
+    inserted = 0
+    failed = 0
     for r in results:
         if 'location_id' not in r:
             logger.warn("No 'location_id' for %s" % str(r))
@@ -64,37 +66,12 @@ def import_from_url(url, type):
 
         try:
             suc_collection.insert(d)
+            inserted += 1
         except DuplicateKeyError:
             logger.warn("Duplicated key=%s" % d['locationId'])
+            failed += 1
     logger.info("Imported, type=%s, count=%d" % (type, len(results)))
-
-correction_table = {
-    'Hiltpoltstein': 'poltstein',
-    'Hamburg SEC': 'Hamburg-Essener Straße',
-    'Aix en Provence': 'Aix-en-Provence',
-    'Mosjoen': 'Mosjøen',
-    'Orange': 'Orange Supercharger',
-    'Anif': 'Salzburg',
-    'Modena': 'Modena Supercharger',
-    'Stjördal': 'stjordalsupercharger',
-    'Service Center Schönefeld': 'Berlin-Schönefeld',
-    'Berlin Sec': 'Berlin-Schönefeld',
-    'Gol': 'golsupercharger',
-    'Vystrkov': 'Humpolec',
-    'Eselsfürth': 'Kaiserslautern',
-    'Carpiano': 'Melegnano',
-    'Rivera': 'Monte Ceneri',
-    'Stockholm Infracity': 'Sollentuna',
-    'Palmanova': 'Palmanova Supercharger 2',
-    'Hamburg': 'Hamburg Supercharger',
-    'Chambery': 'Chambéry Supercharger',
-    'Chambery Barberaz': 'Chambéry Barberaz Supercharger',
-    'St.Anton': 'St. Anton Supercharger',
-    'St.Valentin': 'St. Valentin Supercharger',
-    'Wernberg-Koeblitz': 'Wernberg-Köblitz',
-    'Rheine': 'Emsbüren',
-    'Calais': 'calaissupercharger',
-}
+    return {'inserted': inserted, 'failed': failed}
 
 
 def import_checkins(data):
@@ -108,9 +85,6 @@ def import_checkins(data):
             error = 'len=' + str(len(item))
 
         text = item[2]
-        if text in correction_table:
-            text = correction_table[text]
-
         sucs = [s for s in suc_collection.find({
             '$and': [{'type': 'supercharger', 'raw.region': 'europe'}, {
                 '$or': [
@@ -179,8 +153,9 @@ def import_checkins(data):
 def run_import():
     logger.info("Importing, suc_collection_count=%d" % suc_collection.count())
     suc_collection.remove()
-    import_from_url('https://www.tesla.com/all-locations?type=supercharger', 'supercharger')
-    import_from_url('https://www.tesla.com/all-locations?type=destination_charger', 'destination_charger')
+    stats_suc = import_from_url('https://www.tesla.com/all-locations?type=supercharger', 'supercharger')
+    stats_dec = import_from_url('https://www.tesla.com/all-locations?type=destination_charger', 'destination_charger')
+    return {'statsSuc': stats_suc, 'statsDec': stats_dec}
 
 
 if __name__ == "__main__":

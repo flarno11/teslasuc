@@ -7,7 +7,7 @@ from pymongo import MongoClient
 
 def setup_logging():
     logging.config.fileConfig('logging.conf', defaults={})
-    logger = logging.getLogger('teslaImport')
+    logger = logging.getLogger('suc')
     logger.setLevel(logging.DEBUG)
     return logger
 
