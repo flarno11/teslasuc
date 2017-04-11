@@ -10,6 +10,7 @@
   md-items="item in querySearch(searchText)"
   md-item-text="item.title"
   md-min-length="3"
+  md-require-match="true"
   placeholder="SuperCharger">
 <md-item-template>
   <span md-highlight-text="searchText" md-highlight-flags="^i">{{item.title}}</span>

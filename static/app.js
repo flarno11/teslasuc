@@ -103,13 +103,16 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
             sucId: '@'
         },
         link: function($scope, $elem, $attr) {
+            $scope.autoSelect = false;
+
             if ('locationId' in $routeParams) {
                 $log.debug("sucId=", $scope.sucId);
                 document.getElementsByTagName("form")[0].focus();
-                $timeout(function() {
+                $scope.$applyAsync(function() {
+                    $scope.autoSelect = true;
                     $scope.searchText = $routeParams['locationId'];
                     document.getElementById($scope.sucId).getElementsByTagName("input")[0].focus();
-                }, 300);
+                });
             }
 
             $scope.position = "";
@@ -128,17 +131,9 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
                             $scope.position = [lat, lng];
                             $scope.locating = false;
 
+                            $scope.autoSelect = true;
                             $scope.searchText = lat.toFixed(3) +","+lng.toFixed(3);
                             document.getElementById($scope.sucId).getElementsByTagName("input")[0].focus();
-
-                            /*$http({
-                              method: 'GET',
-                              url: '/lookup/'+lat+"/"+lng
-                            }).then(function successCallback(response) {
-                                $scope.triggerAutoComplete(response.data);
-                              }, function errorCallback(response) {
-                                  $log.error(response);
-                              });*/
                         });
                     }, function(error) {
                         $log.info(error);
@@ -159,6 +154,13 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
                   url: '/lookup?query='+query
                 }).then(function successCallback(response) {
                     deferred.resolve(response.data);
+
+                    if ($scope.autoSelect) {
+                        if (response.data.length == 1) {
+                            $scope.selectedItem = response.data[0];
+                        }
+                        $scope.autoSelect = false;
+                    }
                   }, function errorCallback(response) {
                       $log.error(response);
                 });
