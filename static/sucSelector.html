@@ -1,0 +1,20 @@
+<button ng-click="locate()">Locate me</button>
+<md-progress-circular md-mode="indeterminate" ng-if="locating"></md-progress-circular>
+
+<md-autocomplete
+  id="auto_complete_id"
+  md-selected-item="selectedItem"
+  md-search-text-change="searchTextChange(searchText)"
+  md-search-text="searchText"
+  md-selected-item-change="selectedItemChange(item)"
+  md-items="item in querySearch(searchText)"
+  md-item-text="item.title"
+  md-min-length="3"
+  placeholder="SuperCharger">
+<md-item-template>
+  <span md-highlight-text="searchText" md-highlight-flags="^i">{{item.title}}</span>
+</md-item-template>
+<md-not-found>
+  No results found
+</md-not-found>
+</md-autocomplete>

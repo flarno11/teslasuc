@@ -102,7 +102,7 @@ def index():
 
 @app.route('/sucImport', methods=['POST'])
 def route_import():
-    return jsonify(run_import())
+    return jsonify(run_import(suc_collection))
 
 
 @app.route('/lookup')

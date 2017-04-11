@@ -5,3 +5,8 @@ md-input-container .md-errors-spacer {
 .tight {
     margin: 10px 0 0 0;
 }
+
+.md-checkbox-stalls span {
+    margin-left: -5px;
+    margin-right: 10px;
+}

@@ -1,0 +1,12 @@
+<label>Stall Auswahl:</label>
+
+<md-checkbox aria-label="Alle" ng-checked="isChecked()" md-indeterminate="isIndeterminate()" ng-click="toggleAll()"
+             class="md-checkbox-stalls">
+  Alle
+</md-checkbox>
+
+<span ng-repeat="item in items">
+  <md-checkbox ng-checked="exists(item, selected)" ng-click="toggle(item, selected)" class="md-checkbox-stalls">
+  {{ item }}
+  </md-checkbox>
+</span>

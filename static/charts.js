@@ -41,8 +41,8 @@ app.factory('GoogleChartService', function($q) {
     return service;
 });
 
-app.directive("googleChart",function($window, GoogleChartService) {
-    return{
+app.directive("googleChart", function($window, GoogleChartService) {
+    return {
         restrict : "A",
         scope: {
             chartType: '@',

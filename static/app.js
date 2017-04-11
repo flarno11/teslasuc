@@ -17,6 +17,9 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
         templateUrl : "/static/checkin.html"
         //controller : "checkinController"
     })
+    .when("/interruption", {
+        templateUrl : "/static/interruption.html"
+    })
     .when("/history", {
         templateUrl : "/static/history.html",
         controller : "historyController"
@@ -90,9 +93,130 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
     $scope.superCharger = '';
 })
 
+.directive('sucSelector', function($q, $log, $http) {
+    return {
+        restrict : "A",
+        templateUrl: '/static/sucSelector.html',
+        scope: {
+            selectedItem: '=',
+        },
+        link: function($scope, $elem, $attr) {
+
+            $scope.position = "";
+            $scope.locating = false;
+
+            $scope.locate = function() {
+                $log.info("locating...")
+                $scope.position = "locating...";
+                if (navigator.geolocation) {
+                    $scope.locating = true;
+                    navigator.geolocation.getCurrentPosition(function(position){
+                        var lat = position.coords.latitude;
+                        var lng = position.coords.longitude;
+                        $log.info("position=", position.coords);
+                        $scope.$apply(function(){
+                            $scope.position = [lat, lng];
+                            $scope.locating = false;
+
+                            $scope.searchText = lat.toFixed(3) +","+lng.toFixed(3);
+                            document.getElementById('auto_complete_id').getElementsByTagName("input")[0].focus();
+
+                            /*$http({
+                              method: 'GET',
+                              url: '/lookup/'+lat+"/"+lng
+                            }).then(function successCallback(response) {
+                                $scope.triggerAutoComplete(response.data);
+                              }, function errorCallback(response) {
+                                  $log.error(response);
+                              });*/
+                        });
+                    }, function(error) {
+                        $log.info(error);
+                        $scope.locating = false;
+                    });
+                } else {
+                    $log.error("navigator.geolocation not available")
+                }
+            }
+
+            $scope.searchText = '';
+
+            $scope.querySearch = function(query) {
+                deferred = $q.defer();
+
+                $http({
+                  method: 'GET',
+                  url: '/lookup?query='+query
+                }).then(function successCallback(response) {
+                    deferred.resolve(response.data);
+                  }, function errorCallback(response) {
+                      $log.error(response);
+                });
+
+                return deferred.promise;
+            }
+            $scope.searchTextChange = function(text) {
+                $log.info('Text changed to ' + text);
+            }
+            $scope.selectedItemChange = function(item) {
+                $log.info('Item changed to ', item);
+            }
+        }
+    }
+})
+
+
+.directive('stallsSelector', function($q, $log, $http) {
+    return {
+        restrict : "A",
+        templateUrl: '/static/stallsSelector.html',
+        scope: {
+            nofStalls: '=',
+            selectedStalls: '=',
+        },
+        link: function($scope, $elem, $attr) {
+
+            $scope.items = [];
+            for (var i = 0; i < $scope.nofStalls; i++) {
+                $scope.items.push((i + 1) + "A");
+                $scope.items.push((i + 1) + "B");
+            }
+
+            $scope.selected = [];
+            $scope.toggle = function (item, list) {
+                var idx = list.indexOf(item);
+                if (idx > -1) {
+                    list.splice(idx, 1);
+                } else {
+                    list.push(item);
+                }
+            };
+
+            $scope.exists = function (item, list) {
+                return list.indexOf(item) > -1;
+            };
+
+            $scope.isIndeterminate = function() {
+                return ($scope.selected.length !== 0 && $scope.selected.length !== $scope.items.length);
+            };
+
+            $scope.isChecked = function() {
+                return $scope.selected.length === $scope.items.length;
+            };
+
+            $scope.toggleAll = function() {
+                if ($scope.selected.length === $scope.items.length) {
+                    $scope.selected = [];
+                } else if ($scope.selected.length === 0 || $scope.selected.length > 0) {
+                    $scope.selected = $scope.items.slice(0);
+                }
+            };
+        }
+    }
+})
+
 .controller('checkinController', function($scope, $q, $log, $http, $timeout, $window, toaster) {
-    $scope.position = "";
-    $scope.locating = false;
+    $scope.suc = undefined;
     $scope.item = undefined;
 
     $scope.date = new Date();
@@ -103,78 +227,16 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
 
     $scope.tffUserId = "";
 
+    $scope.$watch('suc', function(newValue, oldValue) {
+        $log.info('Item changed to ', newValue);
 
-    $scope.locate = function() {
-        $log.info("locating...")
-        $scope.position = "locating...";
-        if (navigator.geolocation) {
-            $scope.locating = true;
-            navigator.geolocation.getCurrentPosition(function(position){
-                var lat = position.coords.latitude;
-                var lng = position.coords.longitude;
-                $log.info("position=", position.coords);
-                $scope.$apply(function(){
-                    $scope.position = [lat, lng];
-                    $scope.locating = false;
-
-                    $scope.searchText = lat.toFixed(3) +","+lng.toFixed(3);
-                    document.getElementById('auto_complete_id').getElementsByTagName("input")[0].focus();
-
-                    /*$http({
-                      method: 'GET',
-                      url: '/lookup/'+lat+"/"+lng
-                    }).then(function successCallback(response) {
-                        $scope.triggerAutoComplete(response.data);
-                      }, function errorCallback(response) {
-                          $log.error(response);
-                      });*/
-                });
-            }, function(error) {
-                $log.info(error);
-                $scope.locating = false;
-            });
-        } else {
-            $log.error("navigator.geolocation not available")
-        }
-    }
-
-    $scope.searchText = '';
-    var self = this;
-
-    self.querySearch   = querySearch;
-    self.selectedItemChange = selectedItemChange;
-    self.searchTextChange   = searchTextChange;
-
-    // ******************************
-    // Internal methods
-    // ******************************
-    function querySearch(query) {
-        deferred = $q.defer();
-
-        $http({
-          method: 'GET',
-          url: '/lookup?query='+query
-        }).then(function successCallback(response) {
-            deferred.resolve(response.data);
-          }, function errorCallback(response) {
-              $log.error(response);
-        });
-
-        return deferred.promise;
-    }
-    function searchTextChange(text) {
-        $log.info('Text changed to ' + text);
-    }
-    function selectedItemChange(item) {
-        $log.info('Item changed to ', item);
-
-        if (item !== undefined) {
-            $scope.item = item;
+        if (newValue != undefined) {
+            $scope.item = newValue;
             $scope.item.blocked = 0;
             $scope.item.waiting = 0;
             $scope.item.notes = "";
         }
-    }
+    });
 
     $scope.submit = function() {
         var d = $scope.date;
@@ -193,6 +255,56 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
             $scope.searchText = '';
             $scope.item = undefined;
           }, function errorCallback(response) {
+            $window.scrollTo(0, 0);
+            $scope.submitting = false;
+            $log.error(response);
+            toaster.showSimpleToast("Failed to submit: " + response.statusText);
+        });
+    }
+})
+
+.controller('interruptionController', function($scope, $q, $log, $http, $timeout, $window, toaster) {
+    $scope.suc = undefined;
+    $scope.item = undefined;
+
+    $scope.date = new Date();
+
+    var d = new Date();
+    d.setSeconds(0,0);
+    $scope.time = d;
+
+    $scope.tffUserId = "";
+
+    $scope.$watch('suc', function(newValue, oldValue) {
+        $log.info('Item changed to ', newValue);
+
+        if (newValue != undefined) {
+            $scope.item = newValue;
+            //$scope.item.locationId = newValue.locationId;
+            $scope.item.problem = 'none';
+            $scope.item.notes = "";
+            $scope.item.affectedStalls = [];
+        }
+    });
+
+    $scope.submit = function() {
+        var d = $scope.date;
+        d.setHours($scope.time.getHours());
+        d.setMinutes($scope.time.getMinutes());
+        d.setSeconds(0, 0);
+        $scope.item.time = moment(d);
+        $scope.item.tffUserId = $scope.tffUserId;
+        $log.info('Submit', $scope.item);
+        $scope.submitting = true;
+
+        $http.post('/checkinInterruption', $scope.item).then(function successCallback(response) {
+            $scope.submitting = false;
+            toaster.showSimpleToast("Submitted, thank you.");
+            $window.scrollTo(0, 0);
+            $scope.searchText = '';
+            $scope.item = undefined;
+          }, function errorCallback(response) {
+            $window.scrollTo(0, 0);
             $scope.submitting = false;
             $log.error(response);
             toaster.showSimpleToast("Failed to submit: " + response.statusText);

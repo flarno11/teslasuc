@@ -8,9 +8,6 @@ from pytz import timezone
 from config import setup_logging, setup_db
 
 logger = setup_logging()
-db = setup_db()
-suc_collection = db.suc
-checkin_collection = db.checkin
 
 pattern_suc = re.compile("(\d+) Supercharger", re.DOTALL)
 pattern_dc = re.compile("(\d+) Tesla Connector", re.DOTALL)
@@ -32,7 +29,7 @@ def chargers(s):
     return None
 
 
-def import_from_url(url, type):
+def import_from_url(url, type, suc_collection):
     res = requests.get(url)
     if res.status_code != 200:
         logger.error('Failed to load type=%s, code=%d, url=%s, res=%s' % (type, res.status_code, url, res.text))
@@ -74,7 +71,7 @@ def import_from_url(url, type):
     return {'inserted': inserted, 'failed': failed}
 
 
-def import_checkins(data):
+def import_checkins(data, checkin_collection):
     post_data = filter(None, data.split("\n"))
     items = [d.split(",") for d in post_data]
 
@@ -150,11 +147,11 @@ def import_checkins(data):
     return len(parsed)
 
 
-def run_import():
+def run_import(suc_collection):
     logger.info("Importing, suc_collection_count=%d" % suc_collection.count())
     suc_collection.remove()
-    stats_suc = import_from_url('https://www.tesla.com/all-locations?type=supercharger', 'supercharger')
-    stats_dec = import_from_url('https://www.tesla.com/all-locations?type=destination_charger', 'destination_charger')
+    stats_suc = import_from_url('https://www.tesla.com/all-locations?type=supercharger', 'supercharger', suc_collection)
+    stats_dec = import_from_url('https://www.tesla.com/all-locations?type=destination_charger', 'destination_charger', suc_collection)
     return {'statsSuc': stats_suc, 'statsDec': stats_dec}
 
 

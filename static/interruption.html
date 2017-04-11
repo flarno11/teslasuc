@@ -1,14 +1,24 @@
-<form ng-controller="checkinController as ctrl" ng-submit="$event.preventDefault()" name="myForm">
+<form ng-controller="interruptionController as ctrl" ng-submit="$event.preventDefault()" name="myForm">
 
 <br />
 <div suc-selector selected-item="suc"></div>
-<br />
-
+<br/>
 
 <md-input-container class="md-block">
     <label>Stalls total</label>
     <input required type="number" step="1" name="stalls" ng-model="item.stalls" readonly="readonly" />
 </md-input-container>
+
+<md-radio-group ng-model="item.problem">
+    <md-radio-button value="none" class="md-primary">Fehlerfrei</md-radio-button>
+    <md-radio-button value="limitedPower">Leistungseinschränkung</md-radio-button>
+    <md-radio-button value="partialFailure">Teilausfall</md-radio-button>
+    <md-radio-button value="completeFailure">Totalausfall</md-radio-button>
+    <md-radio-button value="trafficBlocking">Verkehrsbehinderung</md-radio-button>
+</md-radio-group>
+
+<div ng-if="item != undefined && item.stalls != undefined && item.problem != 'none'" stalls-selector nof-stalls="item.stalls" selected-stalls="item.selectedStalls"></div>
+
 <md-input-container class="md-block">
     <label>Charging (incl. you)</label>
     <input required type="number" step="1" name="charging" ng-model="item.charging" min="0" max="10" />
@@ -21,9 +31,6 @@
     <label>Waiting</label>
     <input required type="number" step="1" name="waiting" ng-model="item.waiting" min="0" />
 </md-input-container>
-
-<!--<md-datepicker ng-model="item.date" name="date" md-placeholder="Enter date">
-</md-datepicker>-->
 
 <md-input-container>
     <label>Date</label>
