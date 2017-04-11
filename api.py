@@ -115,7 +115,7 @@ def lookup_query():
             q = get_query_coords(lat, lng)
             q['type'] = 'supercharger'
         else:
-            q = {'title': {'$regex': re.escape(query_param), '$options': '-i'}, 'type': 'supercharger'}
+            q = {'$or': [{'title': {'$regex': re.escape(query_param), '$options': '-i'}}, {'locationId': query_param}], 'type': 'supercharger'}
         results = [c for c in suc_collection.find(q, {'raw': False, '_id': False, 'loc': False, 'type': False})]
     else:
         results = []

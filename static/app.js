@@ -11,7 +11,8 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
   });
 })
 
-.config(function($routeProvider) {
+.config(function($routeProvider, $locationProvider) {
+    $locationProvider.hashPrefix('');
     $routeProvider
     .when("/", {
         templateUrl : "/static/checkin.html"
@@ -93,14 +94,23 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
     $scope.superCharger = '';
 })
 
-.directive('sucSelector', function($q, $log, $http) {
+.directive('sucSelector', function($q, $log, $http, $routeParams, $timeout) {
     return {
         restrict : "A",
         templateUrl: '/static/sucSelector.html',
         scope: {
             selectedItem: '=',
+            sucId: '@'
         },
         link: function($scope, $elem, $attr) {
+            if ('locationId' in $routeParams) {
+                $log.debug("sucId=", $scope.sucId);
+                document.getElementsByTagName("form")[0].focus();
+                $timeout(function() {
+                    $scope.searchText = $routeParams['locationId'];
+                    document.getElementById($scope.sucId).getElementsByTagName("input")[0].focus();
+                }, 300);
+            }
 
             $scope.position = "";
             $scope.locating = false;
@@ -119,7 +129,7 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
                             $scope.locating = false;
 
                             $scope.searchText = lat.toFixed(3) +","+lng.toFixed(3);
-                            document.getElementById('auto_complete_id').getElementsByTagName("input")[0].focus();
+                            document.getElementById($scope.sucId).getElementsByTagName("input")[0].focus();
 
                             /*$http({
                               method: 'GET',
@@ -215,7 +225,7 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
     }
 })
 
-.controller('checkinController', function($scope, $q, $log, $http, $timeout, $window, toaster) {
+.controller('checkinController', function($scope, $q, $log, $http, $window, toaster) {
     $scope.suc = undefined;
     $scope.item = undefined;
 
@@ -263,7 +273,7 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
     }
 })
 
-.controller('interruptionController', function($scope, $q, $log, $http, $timeout, $window, toaster) {
+.controller('interruptionController', function($scope, $q, $log, $http, $window, $routeParams, toaster) {
     $scope.suc = undefined;
     $scope.item = undefined;
 
@@ -273,7 +283,11 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
     d.setSeconds(0,0);
     $scope.time = d;
 
-    $scope.tffUserId = "";
+    if ('tffUserId' in $routeParams) {
+        $scope.tffUserId = $routeParams['tffUserId'];
+    } else {
+        $scope.tffUserId = "";
+    }
 
     $scope.$watch('suc', function(newValue, oldValue) {
         $log.info('Item changed to ', newValue);
