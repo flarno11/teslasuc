@@ -1,4 +1,4 @@
-angular.module("myApp", ['ngRoute', 'ngMaterial', 'gettext', 'suc.charts',])
+angular.module("myApp", ['ngRoute', 'ngCookies', 'ngMaterial', 'gettext', 'suc.charts',])
 
 .config(function($mdThemingProvider) {
   $mdThemingProvider.theme('default')
@@ -15,11 +15,11 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'gettext', 'suc.charts',])
     $locationProvider.hashPrefix('');
     $routeProvider
     .when("/", {
-        templateUrl : "/static/checkin.html"
-        //controller : "checkinController"
+        templateUrl : "/static/overview.html",
+        controller : "overviewController"
     })
-    .when("/interruption", {
-        templateUrl : "/static/interruption.html"
+    .when("/checkin", {
+        templateUrl : "/static/checkin.html"
     })
     .when("/history", {
         templateUrl : "/static/history.html",
@@ -74,7 +74,7 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'gettext', 'suc.charts',])
 })
 
 .controller('navController', function($scope, $location, $log, gettextCatalog) {
-    $scope.defaultNavItem = 'checkin';
+    $scope.defaultNavItem = 'overview';
 
     $scope.updateNav = function() {
         var p = $location.path().split('/');
@@ -100,6 +100,8 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'gettext', 'suc.charts',])
     $log.info("Auto-detected language userAgentLanguages=", config['userAgentLanguages'], ", userLanguages=", userLanguages);
     if (userLanguages.length > 0) {
         $scope.switchLanguage(userLanguages[0]);
+    } else {
+        $scope.switchLanguage('en');
     }
 
     $scope.country = '';
@@ -196,28 +198,28 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'gettext', 'suc.charts',])
         templateUrl: '/static/stallsSelector.html',
         scope: {
             nofStalls: '=',
-            selectedStalls: '=',
+            selected: '=',
         },
         link: function($scope, $elem, $attr) {
 
             $scope.items = [];
-            for (var i = 0; i < $scope.nofStalls; i++) {
+            for (var i = 0; i < $scope.nofStalls / 2; i++) {
                 $scope.items.push((i + 1) + "A");
                 $scope.items.push((i + 1) + "B");
             }
 
             $scope.selected = [];
-            $scope.toggle = function (item, list) {
-                var idx = list.indexOf(item);
+            $scope.toggle = function(item) {
+                var idx = $scope.selected.indexOf(item);
                 if (idx > -1) {
-                    list.splice(idx, 1);
+                    $scope.selected.splice(idx, 1);
                 } else {
-                    list.push(item);
+                    $scope.selected.push(item);
                 }
             };
 
-            $scope.exists = function (item, list) {
-                return list.indexOf(item) > -1;
+            $scope.isSelected = function(item) {
+                return $scope.selected.indexOf(item) > -1;
             };
 
             $scope.isIndeterminate = function() {
@@ -231,7 +233,7 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'gettext', 'suc.charts',])
             $scope.toggleAll = function() {
                 if ($scope.selected.length === $scope.items.length) {
                     $scope.selected = [];
-                } else if ($scope.selected.length === 0 || $scope.selected.length > 0) {
+                } else {
                     $scope.selected = $scope.items.slice(0);
                 }
             };
@@ -239,55 +241,22 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'gettext', 'suc.charts',])
     }
 })
 
-.controller('checkinController', function($scope, $q, $log, $http, $window, toaster) {
-    $scope.suc = undefined;
-    $scope.item = undefined;
+.controller('overviewController', function($scope, $q, $log, $http, $window, toaster) {
+    $scope.sucOverview = [];
 
-    $scope.date = new Date();
-
-    var d = new Date();
-    d.setSeconds(0,0);
-    $scope.time = d;
-
-    $scope.tffUserId = "";
-
-    $scope.$watch('suc', function(newValue, oldValue) {
-        $log.info('Item changed to ', newValue);
-
-        if (newValue != undefined) {
-            $scope.item = newValue;
-            $scope.item.blocked = 0;
-            $scope.item.waiting = 0;
-            $scope.item.notes = "";
-        }
+    $scope.loading = true;
+    $http.get('/overview').then(function successCallback(response) {
+        $scope.loading = false;
+        $scope.sucOverview = response.data;
+    }, function errorCallback(response) {
+        $scope.loading = false;
+        $log.error(response);
     });
 
-    $scope.submit = function() {
-        var d = $scope.date;
-        d.setHours($scope.time.getHours());
-        d.setMinutes($scope.time.getMinutes());
-        d.setSeconds(0, 0);
-        $scope.item.time = moment(d);
-        $scope.item.tffUserId = $scope.tffUserId;
-        $log.info('Submit', $scope.item);
-        $scope.submitting = true;
 
-        $http.post('/checkin', $scope.item).then(function successCallback(response) {
-            $scope.submitting = false;
-            toaster.showSimpleToast("Submitted, thank you.");
-            $window.scrollTo(0, 0);
-            $scope.searchText = '';
-            $scope.item = undefined;
-          }, function errorCallback(response) {
-            $window.scrollTo(0, 0);
-            $scope.submitting = false;
-            $log.error(response);
-            toaster.showSimpleToast("Failed to submit: " + response.statusText);
-        });
-    }
 })
 
-.controller('interruptionController', function($scope, $q, $log, $http, $window, $routeParams, toaster) {
+.controller('checkinController', function($scope, $q, $log, $http, $window, $routeParams, $cookies, toaster) {
     $scope.suc = undefined;
     $scope.item = undefined;
 
@@ -299,6 +268,8 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'gettext', 'suc.charts',])
 
     if ('tffUserId' in $routeParams) {
         $scope.tffUserId = $routeParams['tffUserId'];
+    } else if ($cookies.get('tffUserId') != undefined) {
+        $scope.tffUserId = $cookies.get('tffUserId');
     } else {
         $scope.tffUserId = "";
     }
@@ -315,6 +286,12 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'gettext', 'suc.charts',])
         }
     });
 
+    $scope.$watch('item.affectedStalls', function(newValue, oldValue) {
+        if ($scope.item != undefined && $scope.item.problem == 'blockedStalls') {
+            $scope.item.blocked = newValue.length;
+        }
+    }, true);
+
     $scope.submit = function() {
         var d = $scope.date;
         d.setHours($scope.time.getHours());
@@ -322,20 +299,23 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'gettext', 'suc.charts',])
         d.setSeconds(0, 0);
         $scope.item.time = moment(d);
         $scope.item.tffUserId = $scope.tffUserId;
+        $cookies.put('tffUserId', $scope.tffUserId);
         $log.info('Submit', $scope.item);
         $scope.submitting = true;
 
-        $http.post('/checkinInterruption', $scope.item).then(function successCallback(response) {
+        $http.post('/checkin', $scope.item).then(function successCallback(response) {
             $scope.submitting = false;
             toaster.showSimpleToast("Submitted, thank you.");
             $window.scrollTo(0, 0);
             $scope.searchText = '';
             $scope.item = undefined;
+            $scope.suc = undefined;
           }, function errorCallback(response) {
             $window.scrollTo(0, 0);
             $scope.submitting = false;
             $log.error(response);
-            toaster.showSimpleToast("Failed to submit: " + response.statusText);
+            var msg = response.data != undefined && response.data.message != undefined ? response.data.message : response.statusText;
+            toaster.showSimpleToast("Failed to submit: " + msg);
         });
     }
 })

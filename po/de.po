@@ -12,27 +12,27 @@ msgstr ""
 "X-Generator: Poedit 2.0.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: static/stallsSelector.html:3
+#: static/stallsSelector.html:5
 msgid "All"
 msgstr "Alle"
 
-#: static/interruption.html:27
-msgid "Blocked"
-msgstr "Blockiert"
+#: static/index.html:17
+msgid "Checkin"
+msgstr "Einchecken"
 
-#: static/interruption.html:23
-msgid "Charging (incl. you)"
-msgstr "Am Laden (inkl. dir)"
-
-#: static/interruption.html:16
+#: static/checkin.html:16
 msgid "Complete failure"
 msgstr "Totalausfall"
 
-#: static/interruption.html:36
+#: static/checkin.html:36
 msgid "Date"
 msgstr "Datum"
 
-#: static/interruption.html:14
+#: static/index.html:18
+msgid "History"
+msgstr "Verlauf"
+
+#: static/checkin.html:14
 msgid "Limited power"
 msgstr "Leistungseinschränkung"
 
@@ -40,7 +40,7 @@ msgstr "Leistungseinschränkung"
 msgid "Locate me"
 msgstr "Mich lokalisieren"
 
-#: static/interruption.html:13
+#: static/checkin.html:13
 msgid "No problems"
 msgstr "Fehlerfrei"
 
@@ -48,11 +48,27 @@ msgstr "Fehlerfrei"
 msgid "No results found"
 msgstr "Keine Ergebnisse gefunden"
 
-#: static/interruption.html:52
+#: static/checkin.html:52
 msgid "Notes"
 msgstr "Bemerkungen"
 
-#: static/interruption.html:15
+#: static/checkin.html:27
+msgid "Nr blocked"
+msgstr "Anzahl blockiert"
+
+#: static/checkin.html:23
+msgid "Nr charging (incl. you)"
+msgstr "Anzahl am Laden (inkl. dir)"
+
+#: static/checkin.html:31
+msgid "Nr waiting"
+msgstr "Anzahl am Warten"
+
+#: static/index.html:16
+msgid "Overview"
+msgstr "Übersicht"
+
+#: static/checkin.html:15
 msgid "Partial failure"
 msgstr "Teilausfall"
 
@@ -60,15 +76,19 @@ msgstr "Teilausfall"
 msgid "Select stalls:"
 msgstr "Stall Auswahl:"
 
-#: static/interruption.html:17
+#: static/checkin.html:17
 msgid "Stalls blocked"
 msgstr "Stalls blockiert"
 
-#: static/interruption.html:8
+#: static/checkin.html:8
 msgid "Stalls total"
 msgstr "Stalls total"
 
-#: static/interruption.html:57
+#: static/index.html:19
+msgid "Stats"
+msgstr "Statistiken"
+
+#: static/checkin.html:57
 msgid "Submit"
 msgstr "Absenden"
 
@@ -76,7 +96,7 @@ msgstr "Absenden"
 msgid "SuperCharger"
 msgstr "SuperCharger"
 
-#: static/interruption.html:47
+#: static/checkin.html:47
 msgid "TFF Username"
 msgstr "TFF Benutzername"
 
@@ -88,10 +108,6 @@ msgstr "Tesla SuC"
 msgid "Tesla SuC project on Github"
 msgstr "Tesla SuC Projekt auf Github"
 
-#: static/interruption.html:41
+#: static/checkin.html:41
 msgid "Time"
 msgstr "Zeit"
-
-#: static/interruption.html:31
-msgid "Waiting"
-msgstr "Am Warten"

@@ -148,12 +148,25 @@ def checkin():
         else:
             client_data = request.get_json(force=True)
 
-        if not all(k in client_data for k in ('time', 'locationId', 'stalls', 'charging', 'blocked', 'waiting', 'tffUserId', 'notes')):
+        if not all(k in client_data for k in ('time', 'locationId', 'stalls',
+                                              'problem', 'affectedStalls',
+                                              #'charging', 'blocked', 'waiting',
+                                              'tffUserId', 'notes')):
             raise InvalidAPIUsage("Invalid data received", status_code=400)
 
         validated_data = {}
-        for k in ['stalls', 'charging', 'blocked', 'waiting']:
+        for k in ['stalls']:
             validated_data[k] = validate_int(client_data[k])
+
+        validated_data['problem'] = validate_str(client_data['problem'], valid_values=['none', 'limitedPower', 'partialFailure', 'completeFailure', 'blockedStalls'])
+        validated_data['affectedStalls'] = validate_list(client_data['affectedStalls'], generate_stall_names(validated_data['stalls']))
+
+        # optional values
+        for k in ['charging', 'blocked', 'waiting']:
+            if k in client_data:
+                validated_data[k] = validate_int(client_data[k])
+            else:
+                validated_data[k] = None
 
         validated_data['notes'] = validate_str(client_data['notes'])
         validated_data['tffUserId'] = validate_str(client_data['tffUserId'])
@@ -161,7 +174,7 @@ def checkin():
         location = validate_location(client_data['locationId'])
 
         for k in ['charging', 'blocked']:
-            if validated_data[k] > location['stalls']:
+            if validated_data[k] and validated_data[k] > location['stalls']:
                 raise InvalidAPIUsage("Charging/blocked cannot be larger than stalls", status_code=400)
 
         submission = {
@@ -170,6 +183,7 @@ def checkin():
                 'title': location['title'],
                 'country': location['country'],
                 'stalls': location['stalls'],
+                'loc': location['loc'],
             },
             'submitter': {
                 'userAgent': request.headers.get('User-Agent'),
@@ -182,6 +196,10 @@ def checkin():
                 'charging': validated_data['charging'],
                 'blocked': validated_data['blocked'],
                 'waiting': validated_data['waiting'],
+
+                'problem': validated_data['problem'],
+                'affectedStalls': validated_data['affectedStalls'],
+
                 'notes': validated_data['notes'],
             },
         }
@@ -257,7 +275,7 @@ def stats_country(country):
                     {'$match': {'suc.country': country}},
                     {'$group': {'_id': '$suc.locationId',
                                 'checkins': {'$sum': 1},
-                                'utilization': {'$avg': {'$divide': ['$checkin.charging', '$suc.stalls' ]}}}}
+                                'utilization': {'$avg': {'$divide': ['$checkin.charging', '$suc.stalls']}}}}
                 ])
                 }
 
@@ -293,6 +311,35 @@ def stats_super_charger(location_id):
     } for c in checkin_collection.find({'suc.locationId': location_id}).sort('checkin.time')]})
 
 
+@app.route('/overview', methods=['GET',])
+def overview():
+    now_utc = tz_utc.localize(datetime.datetime.utcnow())
+    two_weeks_ago = now_utc - timedelta(days=14)
+
+    return jsonify([{'locationId': c['_id'],
+                     'title': c['title'],
+                     'loc': {'lat': c['loc']['coordinates'][1], 'lng': c['loc']['coordinates'][0]},
+                     'lastCheckin': c['lastCheckin'],
+                     'checkins': c['checkins'],
+                     'utilization': c['utilization'],
+                     'problem': c['problem'],
+                     }
+                    for c in checkin_collection.aggregate([
+        {'$match': {'checkin.time': {'$gt': two_weeks_ago}}},
+        {'$sort': {'checkin.time': 1}},
+        {'$group': {'_id': '$suc.locationId',
+                    'title': {'$last': '$suc.title'},
+                    'loc': {'$last': '$suc.loc'},
+                    'lastCheckin': {'$last': '$checkin.time'},
+                    'checkins': {'$sum': 1},
+                    'utilization': {'$avg': {'$divide': ['$checkin.charging', '$suc.stalls']}},
+                    'problem': {'$last': '$checkin.problem'},
+                    }
+         }
+        ])
+    ])
+
+
 def validate_location(location_id):
     location = suc_collection.find_one({'locationId': location_id})
     if not location:
@@ -309,11 +356,16 @@ def validate_int(s):
     return val
 
 
-def validate_str(s, max_len=1000):
+def validate_str(s, max_len=1000, valid_values=None):
     if not isinstance(s, str):
         raise InvalidAPIUsage("Value is not a string", status_code=400)
     if len(s) > max_len:
         raise InvalidAPIUsage("Text too long", status_code=400)
+
+    if valid_values:
+        if s not in valid_values:
+            raise InvalidAPIUsage("Text has not a valid value", status_code=400)
+
     return s
 
 
@@ -336,6 +388,21 @@ def validate_date(s):
         raise InvalidAPIUsage("Time cannot be more than one month in the past", status_code=400)
 
     return d
+
+
+def validate_list(l, valid_entries):
+    if not isinstance(l, list):
+        raise InvalidAPIUsage("Value is not a list", status_code=400)
+
+    for e in l:
+        if e not in valid_entries:
+            raise InvalidAPIUsage("List contains invalid entry", status_code=400)
+
+    return l
+
+
+def generate_stall_names(nof_stalls):
+    return [str(i + 1) + "A" for i in range(int(nof_stalls/2))] + [str(i + 1) + "B" for i in range(int(nof_stalls/2))]
 
 
 app.json_encoder = JSONEncoder

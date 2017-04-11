@@ -1,0 +1,14 @@
+<md-progress-circular md-mode="indeterminate" ng-if="loading"></md-progress-circular>
+
+<md-list flex>
+    <md-list-item class="md-3-line" ng-repeat="suc in sucOverview">
+      <div class="md-list-item-text" layout="column">
+          <h3>{{ suc.title }}</h3>
+          <h4>Problem: {{ suc.problem }}<br />
+              Stalls: {{ suc.stalls }}<br />
+              Check-ins: {{ suc.checkins }}<br />
+              Average utilization: {{ suc.utilization * 100| number :0 }}%
+          </h4>
+      </div>
+    </md-list-item>
+</md-list>
