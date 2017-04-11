@@ -1,0 +1,89 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+
+#: static/stallsSelector.html:3
+msgid "All"
+msgstr ""
+
+#: static/interruption.html:27
+msgid "Blocked"
+msgstr ""
+
+#: static/interruption.html:23
+msgid "Charging (incl. you)"
+msgstr ""
+
+#: static/interruption.html:16
+msgid "Complete failure"
+msgstr ""
+
+#: static/interruption.html:36
+msgid "Date"
+msgstr ""
+
+#: static/interruption.html:14
+msgid "Limited power"
+msgstr ""
+
+#: static/sucSelector.html:2
+msgid "Locate me"
+msgstr ""
+
+#: static/interruption.html:13
+msgid "No problems"
+msgstr ""
+
+#: static/sucSelector.html:19
+msgid "No results found"
+msgstr ""
+
+#: static/interruption.html:52
+msgid "Notes"
+msgstr ""
+
+#: static/interruption.html:15
+msgid "Partial failure"
+msgstr ""
+
+#: static/stallsSelector.html:1
+msgid "Select stalls:"
+msgstr ""
+
+#: static/interruption.html:17
+msgid "Stalls blocked"
+msgstr ""
+
+#: static/interruption.html:8
+msgid "Stalls total"
+msgstr ""
+
+#: static/interruption.html:57
+msgid "Submit"
+msgstr ""
+
+#: static/sucSelector.html:15
+msgid "SuperCharger"
+msgstr ""
+
+#: static/interruption.html:47
+msgid "TFF Username"
+msgstr ""
+
+#: static/index.html:5
+msgid "Tesla SuC"
+msgstr ""
+
+#: static/index.html:32
+msgid "Tesla SuC project on Github"
+msgstr ""
+
+#: static/interruption.html:41
+msgid "Time"
+msgstr ""
+
+#: static/interruption.html:31
+msgid "Waiting"
+msgstr ""

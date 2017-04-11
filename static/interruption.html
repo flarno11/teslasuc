@@ -5,56 +5,56 @@
 <br/>
 
 <md-input-container class="md-block">
-    <label>Stalls total</label>
+    <label translate>Stalls total</label>
     <input required type="number" step="1" name="stalls" ng-model="item.stalls" readonly="readonly" />
 </md-input-container>
 
 <md-radio-group ng-model="item.problem">
-    <md-radio-button value="none" class="md-primary">Fehlerfrei</md-radio-button>
-    <md-radio-button value="limitedPower">Leistungseinschränkung</md-radio-button>
-    <md-radio-button value="partialFailure">Teilausfall</md-radio-button>
-    <md-radio-button value="completeFailure">Totalausfall</md-radio-button>
-    <md-radio-button value="trafficBlocking">Verkehrsbehinderung</md-radio-button>
+    <md-radio-button value="none" class="md-primary" aria-label="No problems"><span translate>No problems</span></md-radio-button>
+    <md-radio-button value="limitedPower" aria-label="Limited power"><span translate>Limited power</span></md-radio-button>
+    <md-radio-button value="partialFailure" aria-label="Partial failure"><span translate>Partial failure</span></md-radio-button>
+    <md-radio-button value="completeFailure" aria-label="Complete failure"><span translate>Complete failure</span></md-radio-button>
+    <md-radio-button value="blockedStalls" aria-label="Stalls blocked"><span translate>Stalls blocked</span></md-radio-button>
 </md-radio-group>
 
 <div ng-if="item != undefined && item.stalls != undefined && item.problem != 'none'" stalls-selector nof-stalls="item.stalls" selected-stalls="item.selectedStalls"></div>
 
 <md-input-container class="md-block">
-    <label>Charging (incl. you)</label>
+    <label translate>Charging (incl. you)</label>
     <input required type="number" step="1" name="charging" ng-model="item.charging" min="0" max="10" />
 </md-input-container>
 <md-input-container class="md-block">
-    <label>Blocked</label>
+    <label translate>Blocked</label>
     <input required type="number" step="1" name="blocked" ng-model="item.blocked" min="0" max="10" />
 </md-input-container>
 <md-input-container class="md-block">
-    <label>Waiting</label>
+    <label translate>Waiting</label>
     <input required type="number" step="1" name="waiting" ng-model="item.waiting" min="0" />
 </md-input-container>
 
 <md-input-container>
-    <label>Date</label>
+    <label translate>Date</label>
     <input required type="date" ng-model="date" name="date">
 </md-input-container>
 
 <md-input-container>
-    <label>Time</label>
+    <label translate>Time</label>
     <input required type="time" ng-model="time" name="time">
 </md-input-container>
 <br />
 
 <md-input-container class="md-block">
-    <label>TFF Username</label>
+    <label translate>TFF Username</label>
     <input required type="text" name="tffUserId" ng-model="tffUserId" max="1000" />
 </md-input-container>
 
 <md-input-container class="md-block">
-    <label>Notes</label>
+    <label translate>Notes</label>
     <input type="text" name="notes" ng-model="item.notes" max="1000" />
 </md-input-container>
 
 
-<md-button class="md-raised" ng-click="submit()" ng-disabled="item == undefined || submitting || !myForm.$valid">Submit</md-button>
+<md-button class="md-raised" ng-click="submit()" ng-disabled="item == undefined || submitting || !myForm.$valid"><span translate>Submit</span></md-button>
 
 <!--<br /><br /><br />
 myForm.time.$valid = {{myForm.time.$valid}}<br/>

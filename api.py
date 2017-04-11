@@ -14,7 +14,8 @@ from flask.wrappers import Response
 from pytz import timezone
 
 from config import setup_logging, setup_db
-from lib import TimeFormat, convert_time_fields, TimePattern, convert_to_csv, TimePatternSimple, TimeFormatSimple
+from lib import TimeFormat, convert_time_fields, TimePattern, convert_to_csv, TimePatternSimple, TimeFormatSimple, \
+    parse_user_accept_languages
 from run_import import run_import, import_checkins
 
 logger = setup_logging()
@@ -98,6 +99,14 @@ def index():
         )
     else:
         return app.send_static_file('index.html')
+
+
+@app.route('/config.js')
+def config():
+    s = "var config = " + JSONEncoder().encode(
+        {'userAgentLanguages': parse_user_accept_languages(request.headers.get('Accept-Language'))}
+    ) + ";\n"
+    return Response(s, mimetype='application/javascript')
 
 
 @app.route('/sucImport', methods=['POST'])

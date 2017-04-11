@@ -1,6 +1,6 @@
 import re
 import datetime
-
+from collections import OrderedDict
 
 TimePattern = re.compile("^[0-9]{4}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z$")
 TimeFormat = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -34,3 +34,10 @@ def convert_to_csv(items):
     header = join(items[0].keys())
     lines = [join(item.values()) for item in items]
     return header + "\n" + "\n".join(lines)
+
+
+def parse_user_accept_languages(header):
+    if header:
+        return list(OrderedDict.fromkeys(map(lambda h: h.split(';')[0].split('-')[0], header.split(','))))
+    else:
+        return []

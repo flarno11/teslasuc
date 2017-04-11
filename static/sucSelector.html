@@ -1,4 +1,5 @@
-<button ng-click="locate()">Locate me</button>
+
+<button ng-click="locate()" translate>Locate me</button>
 <md-progress-circular md-mode="indeterminate" ng-if="locating"></md-progress-circular>
 
 <md-autocomplete
@@ -11,11 +12,9 @@
   md-item-text="item.title"
   md-min-length="3"
   md-require-match="true"
-  placeholder="SuperCharger">
+  placeholder="{{ 'SuperCharger' | translate }}">
 <md-item-template>
   <span md-highlight-text="searchText" md-highlight-flags="^i">{{item.title}}</span>
 </md-item-template>
-<md-not-found>
-  No results found
-</md-not-found>
+<md-not-found translate>No results found</md-not-found>
 </md-autocomplete>

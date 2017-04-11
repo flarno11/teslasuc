@@ -1,0 +1,97 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: static/stallsSelector.html:3
+msgid "All"
+msgstr "Alle"
+
+#: static/interruption.html:27
+msgid "Blocked"
+msgstr "Blockiert"
+
+#: static/interruption.html:23
+msgid "Charging (incl. you)"
+msgstr "Am Laden (inkl. dir)"
+
+#: static/interruption.html:16
+msgid "Complete failure"
+msgstr "Totalausfall"
+
+#: static/interruption.html:36
+msgid "Date"
+msgstr "Datum"
+
+#: static/interruption.html:14
+msgid "Limited power"
+msgstr "Leistungseinschränkung"
+
+#: static/sucSelector.html:2
+msgid "Locate me"
+msgstr "Mich lokalisieren"
+
+#: static/interruption.html:13
+msgid "No problems"
+msgstr "Fehlerfrei"
+
+#: static/sucSelector.html:19
+msgid "No results found"
+msgstr "Keine Ergebnisse gefunden"
+
+#: static/interruption.html:52
+msgid "Notes"
+msgstr "Bemerkungen"
+
+#: static/interruption.html:15
+msgid "Partial failure"
+msgstr "Teilausfall"
+
+#: static/stallsSelector.html:1
+msgid "Select stalls:"
+msgstr "Stall Auswahl:"
+
+#: static/interruption.html:17
+msgid "Stalls blocked"
+msgstr "Stalls blockiert"
+
+#: static/interruption.html:8
+msgid "Stalls total"
+msgstr "Stalls total"
+
+#: static/interruption.html:57
+msgid "Submit"
+msgstr "Absenden"
+
+#: static/sucSelector.html:15
+msgid "SuperCharger"
+msgstr "SuperCharger"
+
+#: static/interruption.html:47
+msgid "TFF Username"
+msgstr "TFF Benutzername"
+
+#: static/index.html:5
+msgid "Tesla SuC"
+msgstr "Tesla SuC"
+
+#: static/index.html:32
+msgid "Tesla SuC project on Github"
+msgstr "Tesla SuC Projekt auf Github"
+
+#: static/interruption.html:41
+msgid "Time"
+msgstr "Zeit"
+
+#: static/interruption.html:31
+msgid "Waiting"
+msgstr "Am Warten"

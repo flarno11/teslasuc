@@ -1,4 +1,4 @@
-angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
+angular.module("myApp", ['ngRoute', 'ngMaterial', 'gettext', 'suc.charts',])
 
 .config(function($mdThemingProvider) {
   $mdThemingProvider.theme('default')
@@ -73,7 +73,7 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
     };
 })
 
-.controller('navController', function($scope, $location, $log) {
+.controller('navController', function($scope, $location, $log, gettextCatalog) {
     $scope.defaultNavItem = 'checkin';
 
     $scope.updateNav = function() {
@@ -89,6 +89,18 @@ angular.module("myApp", ['ngRoute', 'ngMaterial', 'suc.charts',])
     $scope.updateNav();
 
     $log.debug('start currentNavItem=' + $scope.currentNavItem);
+
+    $scope.lang = 'en';
+    $scope.switchLanguage = function(lang) {
+        $scope.lang = lang;
+        gettextCatalog.setCurrentLanguage(lang);
+    };
+    var supportedLanguages = {'de': true, 'en': true};
+    var userLanguages = config['userAgentLanguages'].filter(function(l) { return l in supportedLanguages; })
+    $log.info("Auto-detected language userAgentLanguages=", config['userAgentLanguages'], ", userLanguages=", userLanguages);
+    if (userLanguages.length > 0) {
+        $scope.switchLanguage(userLanguages[0]);
+    }
 
     $scope.country = '';
     $scope.superCharger = '';
