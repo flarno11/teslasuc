@@ -129,7 +129,7 @@ def lookup_query():
     else:
         results = []
 
-    return Response(JSONEncoder().encode(results), mimetype='application/json')
+    return jsonify(results)
 
 
 def get_query_coords(lat, lng):
@@ -231,7 +231,7 @@ def checkin():
             response.headers["Content-Disposition"] = "attachment; filename=checkins.csv"
             return response
         else:
-            return Response(JSONEncoder().encode(results), mimetype='application/json')
+            return jsonify(results)
 
 
 @app.route('/checkinImport', methods=['POST'])
@@ -316,28 +316,43 @@ def overview():
     now_utc = tz_utc.localize(datetime.datetime.utcnow())
     two_weeks_ago = now_utc - timedelta(days=14)
 
-    return jsonify([{'locationId': c['_id'],
-                     'title': c['title'],
-                     'loc': {'lat': c['loc']['coordinates'][1], 'lng': c['loc']['coordinates'][0]},
-                     'lastCheckin': c['lastCheckin'],
-                     'checkins': c['checkins'],
-                     'utilization': c['utilization'],
-                     'problem': c['problem'],
-                     }
-                    for c in checkin_collection.aggregate([
-        {'$match': {'checkin.time': {'$gt': two_weeks_ago}}},
-        {'$sort': {'checkin.time': 1}},
-        {'$group': {'_id': '$suc.locationId',
-                    'title': {'$last': '$suc.title'},
-                    'loc': {'$last': '$suc.loc'},
-                    'lastCheckin': {'$last': '$checkin.time'},
-                    'checkins': {'$sum': 1},
-                    'utilization': {'$avg': {'$divide': ['$checkin.charging', '$suc.stalls']}},
-                    'problem': {'$last': '$checkin.problem'},
-                    }
-         }
-        ])
-    ])
+    results = [{'locationId': c['_id'],
+                'title': c['title'],
+                'loc': {'lat': c['loc']['coordinates'][1], 'lng': c['loc']['coordinates'][0]},
+                'checkins': c['checkins'],
+                'utilization': c['utilization'],
+                'tffUserId': c['tffUserId'],
+                'lastCheckin': c['lastCheckin'],
+                'problem': c['problem'],
+                'affectedStalls': c['affectedStalls'],
+                'notes': c['notes'],
+                }
+               for c in checkin_collection.aggregate([
+            {'$match': {'checkin.time': {'$gt': two_weeks_ago}}},
+            {'$sort': {'checkin.time': 1}},
+            {'$group': {'_id': '$suc.locationId',
+                        'title': {'$last': '$suc.title'},
+                        'loc': {'$last': '$suc.loc'},
+                        'checkins': {'$sum': 1},
+                        'utilization': {'$avg': {'$divide': ['$checkin.charging', '$suc.stalls']}},
+                        'tffUserId': {'$last': '$submitter.tffUserId'},
+                        'lastCheckin': {'$last': '$checkin.time'},
+                        'problem': {'$last': '$checkin.problem'},
+                        'affectedStalls': {'$last': '$checkin.affectedStalls'},
+                        'notes': {'$last': '$checkin.notes'},
+                        }
+             }
+            ]
+        )
+    ]
+
+    query_param_callback = request.args.get('callback', None)
+    if query_param_callback:
+        return Response(
+            query_param_callback + '(' + JSONEncoder().encode(results) + ');',
+            mimetype='application/javascript')
+    else:
+        return jsonify(results)
 
 
 def validate_location(location_id):
