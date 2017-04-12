@@ -68,10 +68,6 @@ msgstr ""
 msgid "Select stalls:"
 msgstr ""
 
-#: static/checkin.html:17
-msgid "Stalls blocked"
-msgstr ""
-
 #: static/checkin.html:8
 msgid "Stalls total"
 msgstr ""
@@ -102,4 +98,8 @@ msgstr ""
 
 #: static/checkin.html:41
 msgid "Time"
+msgstr ""
+
+#: static/checkin.html:17
+msgid "Traffic disruption"
 msgstr ""

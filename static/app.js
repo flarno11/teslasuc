@@ -286,11 +286,11 @@ angular.module("myApp", ['ngRoute', 'ngCookies', 'ngMaterial', 'gettext', 'suc.c
         }
     });
 
-    $scope.$watch('item.affectedStalls', function(newValue, oldValue) {
+    /*$scope.$watch('item.affectedStalls', function(newValue, oldValue) {
         if ($scope.item != undefined && $scope.item.problem == 'blockedStalls') {
             $scope.item.blocked = newValue.length;
         }
-    }, true);
+    }, true);*/
 
     $scope.submit = function() {
         var d = $scope.date;

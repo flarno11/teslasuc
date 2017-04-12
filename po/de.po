@@ -76,10 +76,6 @@ msgstr "Teilausfall"
 msgid "Select stalls:"
 msgstr "Stall Auswahl:"
 
-#: static/checkin.html:17
-msgid "Stalls blocked"
-msgstr "Stalls blockiert"
-
 #: static/checkin.html:8
 msgid "Stalls total"
 msgstr "Stalls total"
@@ -111,3 +107,10 @@ msgstr "Tesla SuC Projekt auf Github"
 #: static/checkin.html:41
 msgid "Time"
 msgstr "Zeit"
+
+#: static/checkin.html:17
+msgid "Traffic disruption"
+msgstr "Verkehrsbeeinträchtigung"
+
+#~ msgid "Stalls blocked"
+#~ msgstr "Stalls blockiert"
