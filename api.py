@@ -158,7 +158,7 @@ def checkin():
         for k in ['stalls']:
             validated_data[k] = validate_int(client_data[k])
 
-        validated_data['problem'] = validate_str(client_data['problem'], valid_values=['none', 'limitedPower', 'partialFailure', 'completeFailure', 'blockedStalls'])
+        validated_data['problem'] = validate_str(client_data['problem'], valid_values=['none', 'limitedPower', 'partialFailure', 'completeFailure', 'trafficDisruption'])
         validated_data['affectedStalls'] = validate_list(client_data['affectedStalls'], generate_stall_names(validated_data['stalls']))
 
         # optional values
