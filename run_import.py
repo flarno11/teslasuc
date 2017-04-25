@@ -16,7 +16,7 @@ tz_zurich = timezone('Europe/Zurich')
 tz_utc = timezone('UTC')
 
 
-def chargers(s):
+def chargers(s, location_id):
     m = pattern_suc.findall(s)
     if len(m) > 0:
         return int(m[0])
@@ -25,7 +25,7 @@ def chargers(s):
     if len(m):
         return int(m[0])
 
-    logger.warn("No chargers found from %s" % s)
+    logger.warn("No chargers found for %s from '%s'" % (location_id, s))
     return None
 
 
@@ -38,9 +38,16 @@ def import_from_url(url, type, suc_collection):
     results = json.loads(res.text)
     inserted = 0
     failed = 0
+    skipped = 0
     for r in results:
         if 'location_id' not in r:
-            logger.warn("No 'location_id' for %s" % str(r))
+            logger.warn("No location_id for %s" % str(r))
+            skipped += 1
+            continue
+
+        if 'open_soon' in r and r['open_soon'] == '1':
+            logger.info("Skip open_soon for %s" % r['location_id'])
+            skipped += 1
             continue
 
         d = {
@@ -50,10 +57,10 @@ def import_from_url(url, type, suc_collection):
             'country': r['country'],
             'raw': r,
         }
-        if 'chargers' in r:
-            d['stalls'] = chargers(r['chargers'])
+        if 'chargers' in r and r['chargers']:
+            d['stalls'] = chargers(r['chargers'], r['location_id'])
         else:
-            logger.warn("No 'chargers' for %s" % r['location_id'])
+            logger.warn("No chargers for %s" % r['location_id'])
             d['stalls'] = None
 
         if 'latitude' in r and 'longitude' in r:
@@ -68,10 +75,10 @@ def import_from_url(url, type, suc_collection):
             logger.warn("Duplicated key=%s" % d['locationId'])
             failed += 1
     logger.info("Imported, type=%s, count=%d" % (type, len(results)))
-    return {'inserted': inserted, 'failed': failed}
+    return {'inserted': inserted, 'failed': failed, 'skipped': skipped}
 
 
-def import_checkins(data, checkin_collection):
+def import_checkins(data, suc_collection, checkin_collection):
     post_data = filter(None, data.split("\n"))
     items = [d.split(",") for d in post_data]
 
