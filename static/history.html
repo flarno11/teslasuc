@@ -9,13 +9,17 @@
         </md-input-container>
 
         <br /><br />
-        Format: Stalls / Charging / Blocked / Waiting
+        <span translate>Format: Stalls / Charging / Blocked / Waiting</span>
     </md-subheader>
     <md-list-item class="md-3-line" ng-repeat="item in items" ng-href="/#/stats/superCharger/{{item.suc.locationId}}">
       <img ng-src="" class="md-avatar" alt="" />
       <div class="md-list-item-text" layout="column">
         <h3><span md-highlight-text="filterText" md-highlight-flags="^i">{{item.suc.title}}</span></h3>
-        <h4>{{ item.suc.stalls }} / {{ item.checkin.charging }} / {{ item.checkin.blocked }} / {{ item.checkin.waiting }}</h4>
+        <h4 ng-if="item.checkin.charging || item.checkin.blocked || item.checkin.waiting">{{ item.suc.stalls }} / {{ item.checkin.charging | ifEmpty: '-' }} / {{ item.checkin.blocked | ifEmpty: '-' }} / {{ item.checkin.waiting | ifEmpty: '-' }}</h4>
+        <h4 ng-if="item.checkin.problem">
+            <span translate>Problem:</span> {{ getProblemDescr(item.checkin.problem) | translate }},
+            <span translate>Affected stalls:</span> <span ng-repeat="s in item.checkin.affectedStalls">{{ s }} </span>
+        </h4>
         <h4>{{ item.checkin.notes }}</h4>
         <p>{{ item.checkin.time | date:'yyyy-MM-dd HH:mm Z' }}</p>
       </div>

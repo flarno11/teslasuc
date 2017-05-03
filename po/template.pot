@@ -4,6 +4,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 
+#: static/history.html:19
+msgid "Affected stalls:"
+msgstr ""
+
 #: static/stallsSelector.html:5
 msgid "All"
 msgstr ""
@@ -12,19 +16,23 @@ msgstr ""
 msgid "Checkin"
 msgstr ""
 
-#: static/checkin.html:16
+#: static/checkin.html:5
 msgid "Complete failure"
 msgstr ""
 
-#: static/checkin.html:36
+#: static/checkin.html:40
 msgid "Date"
+msgstr ""
+
+#: static/history.html:12
+msgid "Format: Stalls / Charging / Blocked / Waiting"
 msgstr ""
 
 #: static/index.html:18
 msgid "History"
 msgstr ""
 
-#: static/checkin.html:14
+#: static/checkin.html:3
 msgid "Limited power"
 msgstr ""
 
@@ -32,7 +40,7 @@ msgstr ""
 msgid "Locate me"
 msgstr ""
 
-#: static/checkin.html:13
+#: static/checkin.html:2
 msgid "No problems"
 msgstr ""
 
@@ -40,19 +48,19 @@ msgstr ""
 msgid "No results found"
 msgstr ""
 
-#: static/checkin.html:52
+#: static/checkin.html:56
 msgid "Notes"
 msgstr ""
 
-#: static/checkin.html:27
+#: static/checkin.html:31
 msgid "Nr blocked"
 msgstr ""
 
-#: static/checkin.html:23
+#: static/checkin.html:27
 msgid "Nr charging (incl. you)"
 msgstr ""
 
-#: static/checkin.html:31
+#: static/checkin.html:35
 msgid "Nr waiting"
 msgstr ""
 
@@ -60,15 +68,19 @@ msgstr ""
 msgid "Overview"
 msgstr ""
 
-#: static/checkin.html:15
+#: static/checkin.html:4
 msgid "Partial failure"
+msgstr ""
+
+#: static/history.html:19
+msgid "Problem:"
 msgstr ""
 
 #: static/stallsSelector.html:1
 msgid "Select stalls:"
 msgstr ""
 
-#: static/checkin.html:8
+#: static/checkin.html:16
 msgid "Stalls total"
 msgstr ""
 
@@ -76,7 +88,7 @@ msgstr ""
 msgid "Stats"
 msgstr ""
 
-#: static/checkin.html:57
+#: static/checkin.html:61
 msgid "Submit"
 msgstr ""
 
@@ -84,7 +96,7 @@ msgstr ""
 msgid "SuperCharger"
 msgstr ""
 
-#: static/checkin.html:47
+#: static/checkin.html:51
 msgid "TFF Username"
 msgstr ""
 
@@ -96,10 +108,10 @@ msgstr ""
 msgid "Tesla SuC project on Github"
 msgstr ""
 
-#: static/checkin.html:41
+#: static/checkin.html:45
 msgid "Time"
 msgstr ""
 
-#: static/checkin.html:17
+#: static/checkin.html:6
 msgid "Traffic disruption"
 msgstr ""

@@ -14,11 +14,11 @@ angular.module("myApp", ['ngRoute', 'ngCookies', 'ngMaterial', 'gettext', 'suc.c
 .config(function($routeProvider, $locationProvider) {
     $locationProvider.hashPrefix('');
     $routeProvider
-    .when("/", {
+    .when("/overview", {
         templateUrl : "/static/overview.html",
         controller : "overviewController"
     })
-    .when("/checkin", {
+    .when("/", {
         templateUrl : "/static/checkin.html"
     })
     .when("/history", {
@@ -37,6 +37,16 @@ angular.module("myApp", ['ngRoute', 'ngCookies', 'ngMaterial', 'gettext', 'suc.c
         templateUrl : "/static/stats.html",
         controller : "statsController"
     });
+})
+
+.filter('ifEmpty', function() {
+    return function(input, defaultValue) {
+        if (angular.isUndefined(input) || input === null || input === '') {
+            return defaultValue;
+        }
+
+        return input;
+    }
 })
 
 .service('toaster', function($mdToast) {
@@ -74,7 +84,7 @@ angular.module("myApp", ['ngRoute', 'ngCookies', 'ngMaterial', 'gettext', 'suc.c
 })
 
 .controller('navController', function($scope, $location, $log, gettextCatalog) {
-    $scope.defaultNavItem = 'overview';
+    $scope.defaultNavItem = 'checkin';
 
     $scope.updateNav = function() {
         var p = $location.path().split('/');
@@ -90,6 +100,7 @@ angular.module("myApp", ['ngRoute', 'ngCookies', 'ngMaterial', 'gettext', 'suc.c
 
     $log.debug('start currentNavItem=' + $scope.currentNavItem);
 
+
     $scope.lang = 'en';
     $scope.switchLanguage = function(lang) {
         $scope.lang = lang;
@@ -103,6 +114,23 @@ angular.module("myApp", ['ngRoute', 'ngCookies', 'ngMaterial', 'gettext', 'suc.c
     } else {
         $scope.switchLanguage('en');
     }
+
+
+    $scope.problemList = {
+        "none": "No problems",
+        "limitedPower": "Limited power",
+        "partialFailure": "Partial failure",
+        "completeFailure": "Complete failure",
+        "trafficDisruption": "Traffic disruption"
+    };
+    $scope.getProblemDescr = function(problem) {
+        if (problem in $scope.problemList) {
+            return $scope.problemList[problem];
+        } else {
+            return "Missing translation";
+        }
+    };
+
 
     $scope.country = '';
     $scope.superCharger = '';
@@ -317,7 +345,7 @@ angular.module("myApp", ['ngRoute', 'ngCookies', 'ngMaterial', 'gettext', 'suc.c
             var msg = response.data != undefined && response.data.message != undefined ? response.data.message : response.statusText;
             toaster.showSimpleToast("Failed to submit: " + msg);
         });
-    }
+    };
 })
 
 

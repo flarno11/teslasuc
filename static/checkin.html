@@ -1,3 +1,11 @@
+<div style="display: none">
+    <span translate>No problems</span>
+    <span translate>Limited power</span>
+    <span translate>Partial failure</span>
+    <span translate>Complete failure</span>
+    <span translate>Traffic disruption</span>
+</div>
+
 <form ng-controller="checkinController as ctrl" ng-submit="$event.preventDefault()" name="myForm">
 
 <br />
@@ -10,11 +18,7 @@
 </md-input-container>
 
 <md-radio-group required ng-model="item.problem">
-    <md-radio-button value="none" class="md-primary" aria-label="No problems"><span translate>No problems</span></md-radio-button>
-    <md-radio-button value="limitedPower" aria-label="Limited power"><span translate>Limited power</span></md-radio-button>
-    <md-radio-button value="partialFailure" aria-label="Partial failure"><span translate>Partial failure</span></md-radio-button>
-    <md-radio-button value="completeFailure" aria-label="Complete failure"><span translate>Complete failure</span></md-radio-button>
-    <md-radio-button value="trafficDisruption" aria-label="Traffic disruption"><span translate>Traffic disruption</span></md-radio-button>
+    <md-radio-button ng-repeat="(p, descr) in problemList" value="{{ p }}" class="md-primary" aria-label="{{ descr | translate }}">{{ descr | translate }}</md-radio-button>
 </md-radio-group>
 
 <div ng-if="item != undefined && item.stalls != undefined && item.problem != 'none'" stalls-selector nof-stalls="item.stalls" selected="item.affectedStalls"></div>
