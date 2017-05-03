@@ -4,15 +4,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 
-#: static/history.html:19
-msgid "Affected stalls:"
+#: static/history.html:21
+msgid "Affected stalls"
 msgstr ""
 
 #: static/stallsSelector.html:5
 msgid "All"
 msgstr ""
 
-#: static/index.html:17
+#: static/stats.html:13
+#: static/stats.html:30
+msgid "Average utilization"
+msgstr ""
+
+#: static/stats.html:13
+#: static/stats.html:29
+msgid "Check-ins"
+msgstr ""
+
+#: static/index.html:18
 msgid "Checkin"
 msgstr ""
 
@@ -28,7 +38,7 @@ msgstr ""
 msgid "Format: Stalls / Charging / Blocked / Waiting"
 msgstr ""
 
-#: static/index.html:18
+#: static/index.html:19
 msgid "History"
 msgstr ""
 
@@ -48,6 +58,10 @@ msgstr ""
 msgid "No results found"
 msgstr ""
 
+#: static/stats.html:42
+msgid "No utilization data available yet."
+msgstr ""
+
 #: static/checkin.html:56
 msgid "Notes"
 msgstr ""
@@ -64,7 +78,7 @@ msgstr ""
 msgid "Nr waiting"
 msgstr ""
 
-#: static/index.html:16
+#: static/index.html:17
 msgid "Overview"
 msgstr ""
 
@@ -72,19 +86,23 @@ msgstr ""
 msgid "Partial failure"
 msgstr ""
 
-#: static/history.html:19
-msgid "Problem:"
+#: static/history.html:20
+msgid "Problem"
 msgstr ""
 
 #: static/stallsSelector.html:1
 msgid "Select stalls:"
 msgstr ""
 
+#: static/stats.html:28
+msgid "Stalls"
+msgstr ""
+
 #: static/checkin.html:16
 msgid "Stalls total"
 msgstr ""
 
-#: static/index.html:19
+#: static/index.html:20
 msgid "Stats"
 msgstr ""
 
@@ -96,6 +114,10 @@ msgstr ""
 msgid "SuperCharger"
 msgstr ""
 
+#: static/stats.html:13
+msgid "SuperChargers"
+msgstr ""
+
 #: static/checkin.html:51
 msgid "TFF Username"
 msgstr ""
@@ -104,7 +126,7 @@ msgstr ""
 msgid "Tesla SuC"
 msgstr ""
 
-#: static/index.html:32
+#: static/index.html:33
 msgid "Tesla SuC project on Github"
 msgstr ""
 
@@ -114,4 +136,9 @@ msgstr ""
 
 #: static/checkin.html:6
 msgid "Traffic disruption"
+msgstr ""
+
+#: static/stats.html:19
+#: static/stats.html:37
+msgid "Utilization = #charging / #stalls"
 msgstr ""

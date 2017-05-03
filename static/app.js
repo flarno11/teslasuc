@@ -21,6 +21,9 @@ angular.module("myApp", ['ngRoute', 'ngCookies', 'ngMaterial', 'gettext', 'suc.c
     .when("/", {
         templateUrl : "/static/checkin.html"
     })
+    .when("/checkin", {
+        templateUrl : "/static/checkin.html"
+    })
     .when("/history", {
         templateUrl : "/static/history.html",
         controller : "historyController"
@@ -436,7 +439,9 @@ angular.module("myApp", ['ngRoute', 'ngCookies', 'ngMaterial', 'gettext', 'suc.c
             });
             r.unshift(["Time", "Stalls", "Charging", "Blocked", "Waiting"]);
             $scope.superChargerStats = r;
-            console.log('superChargerStats', $scope.superChargerStats);
+            $scope.superChargerStatsEmpty = $scope.superChargerStats.every(function(d) { return d.charging == null });
+
+            console.log('superChargerStats=', $scope.superChargerStats, ', superChargerStatsEmpty=', $scope.superChargerStatsEmpty);
         }, function errorCallback(response) {
             $scope.loading = false;
             $log.error(response);

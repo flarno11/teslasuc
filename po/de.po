@@ -12,15 +12,23 @@ msgstr ""
 "X-Generator: Poedit 2.0.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: static/history.html:19
-msgid "Affected stalls:"
-msgstr "Betroffene Stalls:"
+#: static/history.html:21
+msgid "Affected stalls"
+msgstr "Betroffene Stalls"
 
 #: static/stallsSelector.html:5
 msgid "All"
 msgstr "Alle"
 
-#: static/index.html:17
+#: static/stats.html:13 static/stats.html:30
+msgid "Average utilization"
+msgstr "Durchschnittliche Auslastung"
+
+#: static/stats.html:13 static/stats.html:29
+msgid "Check-ins"
+msgstr "Meldungen"
+
+#: static/index.html:18
 msgid "Checkin"
 msgstr "Einchecken"
 
@@ -36,7 +44,7 @@ msgstr "Datum"
 msgid "Format: Stalls / Charging / Blocked / Waiting"
 msgstr "Format: Anzahl Stalls / Am Laden / Blockiert / Am Warten"
 
-#: static/index.html:18
+#: static/index.html:19
 msgid "History"
 msgstr "Verlauf"
 
@@ -56,6 +64,10 @@ msgstr "Fehlerfrei"
 msgid "No results found"
 msgstr "Keine Ergebnisse gefunden"
 
+#: static/stats.html:42
+msgid "No utilization data available yet."
+msgstr "Noch keine Auslastungsdaten"
+
 #: static/checkin.html:56
 msgid "Notes"
 msgstr "Bemerkungen"
@@ -72,7 +84,7 @@ msgstr "Anzahl am Laden (inkl. dir)"
 msgid "Nr waiting"
 msgstr "Anzahl am Warten"
 
-#: static/index.html:16
+#: static/index.html:17
 msgid "Overview"
 msgstr "Übersicht"
 
@@ -80,19 +92,23 @@ msgstr "Übersicht"
 msgid "Partial failure"
 msgstr "Teilausfall"
 
-#: static/history.html:19
-msgid "Problem:"
-msgstr "Problem:"
+#: static/history.html:20
+msgid "Problem"
+msgstr "Problem"
 
 #: static/stallsSelector.html:1
 msgid "Select stalls:"
 msgstr "Stall Auswahl:"
 
+#: static/stats.html:28
+msgid "Stalls"
+msgstr "Stalls"
+
 #: static/checkin.html:16
 msgid "Stalls total"
 msgstr "Stalls total"
 
-#: static/index.html:19
+#: static/index.html:20
 msgid "Stats"
 msgstr "Statistiken"
 
@@ -104,6 +120,10 @@ msgstr "Absenden"
 msgid "SuperCharger"
 msgstr "SuperCharger"
 
+#: static/stats.html:13
+msgid "SuperChargers"
+msgstr "SuperChargers"
+
 #: static/checkin.html:51
 msgid "TFF Username"
 msgstr "TFF Benutzername"
@@ -112,7 +132,7 @@ msgstr "TFF Benutzername"
 msgid "Tesla SuC"
 msgstr "Tesla SuC"
 
-#: static/index.html:32
+#: static/index.html:33
 msgid "Tesla SuC project on Github"
 msgstr "Tesla SuC Projekt auf Github"
 
@@ -123,6 +143,15 @@ msgstr "Zeit"
 #: static/checkin.html:6
 msgid "Traffic disruption"
 msgstr "Verkehrsbeeinträchtigung"
+
+#: static/stats.html:19 static/stats.html:37
+msgid "Utilization = #charging / #stalls"
+msgstr "Auslastung = #Am Laden / #Stalls"
+
+#, fuzzy
+#~| msgid "Checkin"
+#~ msgid "Check-ins:"
+#~ msgstr "Einchecken"
 
 #~ msgid "Stalls blocked"
 #~ msgstr "Stalls blockiert"

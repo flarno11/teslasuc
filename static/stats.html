@@ -10,13 +10,13 @@
           <img ng-src="" class="md-avatar" alt="" />
           <div class="md-list-item-text" layout="column">
               <h3>{{ c.country }}</h3>
-              <h4>SuperChargers: {{ c.sucs }}<br />Check-ins: {{ c.checkins }}<br />Average utilization: {{ c.utilization * 100| number :0 }}%</h4>
+              <h4><span translate>SuperChargers</span>: {{ c.sucs }}<br /><span translate>Check-ins</span>: {{ c.checkins }}<br /><span translate>Average utilization</span>: {{ c.utilization * 100| number :0 }}%</h4>
           </div>
         </md-list-item>
     </md-list>
 
     <br />
-    Utilization = #charging / #stalls
+    <span translate>Utilization = #charging / #stalls</span>
 </div>
 
 <div ng-if="country != undefined && superCharger == undefined">
@@ -25,18 +25,19 @@
           <img ng-src="" class="md-avatar" alt="" />
           <div class="md-list-item-text" layout="column">
               <h3>{{ suc.title }}</h3>
-              <h4>Stalls: {{ suc.stalls }}<br />
-                  Check-ins: {{ suc.checkins }}<br />
-                  Average utilization: {{ suc.utilization * 100| number :0 }}%
+              <h4><span translate>Stalls</span>: {{ suc.stalls }}<br />
+                  <span translate>Check-ins</span>: {{ suc.checkins }}<br />
+                  <span translate>Average utilization</span>: {{ suc.utilization * 100| number :0 }}%
               </h4>
           </div>
         </md-list-item>
     </md-list>
 
     <br />
-    Utilization = #charging / #stalls
+    <span translate>Utilization = #charging / #stalls</span>
 </div>
 
 <div ng-if="superCharger != undefined">
-    <div data-google-chart style="height: 300px;" data-chart-y-title="" data-chart-type="AnnotationChart" data-chart-data="superChargerStats" data-chart-options="superChargerChartOptions"></div>
+    <div ng-if="!superChargerStatsEmpty" data-google-chart style="height: 300px;" data-chart-y-title="" data-chart-type="AnnotationChart" data-chart-data="superChargerStats" data-chart-options="superChargerChartOptions"></div>
+    <span ng-if="superChargerStatsEmpty" translate>No utilization data available yet.</span>
 </div>
