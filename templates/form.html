@@ -27,7 +27,7 @@
         <tr>
             <td>SuperCharger:</td>
             <td>
-                <select name="locationId">
+                <select name="locationId" required>
                 <option></option>
                 {% for s in superChargers %}
                     {% if s.locationId == preselectedSupercharger %}
@@ -42,7 +42,8 @@
         <tr>
             <td>Problem:</td>
             <td>
-                <select name="problem">
+                <select name="problem" required>
+                    <option></option>
                     <option value="none">No problems / Keine Probleme</option>
                     <option value="limitedPower">Limited power / Leistungseinschränkung</option>
                     <option value="partialFailure">Partial failure / Teilausfall</option>
@@ -53,35 +54,38 @@
         </tr>
         <tr>
             <td>Select Stalls / Stall Auswahl:</td>
-            <td>
-                <select name="affectedStalls" multiple>
-                    <option value="1A">1A</option><option value="1B">1B</option>
-                    <option value="2A">2A</option><option value="2B">2B</option>
-                    <option value="3A">3A</option><option value="3B">3B</option>
-                    <option value="4A">4A</option><option value="4B">4B</option>
-                    <option value="5A">5A</option><option value="5B">5B</option>
-                </select>
+            <td style="white-space: nowrap">
+                <input type="checkbox" name="affectedStalls" value="1A" id="affectedStalls1A" /><label for="affectedStalls1A">1A</label>
+                <input type="checkbox" name="affectedStalls" value="1B" id="affectedStalls1B" /><label for="affectedStalls1B">1B</label>
+                <input type="checkbox" name="affectedStalls" value="2A" id="affectedStalls2A" /><label for="affectedStalls2A">2A</label>
+                <input type="checkbox" name="affectedStalls" value="2B" id="affectedStalls2B" /><label for="affectedStalls2B">2B</label>
+                <input type="checkbox" name="affectedStalls" value="3A" id="affectedStalls3A" /><label for="affectedStalls3A">3A</label>
+                <input type="checkbox" name="affectedStalls" value="3B" id="affectedStalls3B" /><label for="affectedStalls3B">3B</label>
+                <input type="checkbox" name="affectedStalls" value="4A" id="affectedStalls4A" /><label for="affectedStalls4A">4A</label>
+                <input type="checkbox" name="affectedStalls" value="4B" id="affectedStalls4B" /><label for="affectedStalls4B">4B</label>
+                <input type="checkbox" name="affectedStalls" value="5A" id="affectedStalls5A" /><label for="affectedStalls5A">5A</label>
+                <input type="checkbox" name="affectedStalls" value="5B" id="affectedStalls5B" /><label for="affectedStalls5B">5B</label>
             </td>
         </tr>
         <tr>
             <td>Charging (incl. you) / Am Laden (inkl. dir):</td>
-            <td><input name="charging" type="text" /></td>
+            <td><input name="charging" type="text" value="" /></td>
         </tr>
         <tr>
             <td>Waiting / Am Warten:</td>
-            <td><input name="waiting" type="text" value="0" /></td>
+            <td><input name="waiting" type="text" value="" /></td>
         </tr>
         <tr>
             <td>Blocked / Blockiert:</td>
-            <td><input name="blocked" type="text" value="0" /></td>
+            <td><input name="blocked" type="text" value="" /></td>
         </tr>
         <tr>
             <td>Time:</td>
-            <td><input name="time" type="text" value="{{ time }}" /></td>
+            <td><input name="time" type="text" value="{{ time }}" required /></td>
         </tr>
         <tr>
             <td>TFF Username:</td>
-            <td><input name="tffUserId" type="text" value="{{ tffUserId }}" /></td>
+            <td><input name="tffUserId" type="text" value="{{ tffUserId }}" required /></td>
         </tr>
         <tr>
             <td>Notes (optional):</td>

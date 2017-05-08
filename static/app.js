@@ -139,7 +139,7 @@ angular.module("myApp", ['ngRoute', 'ngCookies', 'ngMaterial', 'gettext', 'suc.c
     $scope.superCharger = '';
 })
 
-.directive('sucSelector', function($q, $log, $http, $routeParams, $timeout) {
+.directive('sucSelector', function($q, $log, $http, $routeParams, $location, $timeout) {
     return {
         restrict : "A",
         templateUrl: '/static/sucSelector.html',

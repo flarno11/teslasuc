@@ -3,6 +3,7 @@ import json
 import datetime
 import os
 import urllib
+import traceback
 from datetime import timedelta
 from time import sleep
 
@@ -59,6 +60,7 @@ app = Flask(__name__)
 
 @app.errorhandler(InvalidAPIUsage)
 def handle_invalid_usage(error):
+    logger.warn("Error, %s %s" % (error.to_dict(), traceback.format_exc()))
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
@@ -169,7 +171,7 @@ def checkin():
 
         # optional values
         for k in ['charging', 'blocked', 'waiting']:
-            if k in client_data:
+            if k in client_data and client_data[k]:
                 validated_data[k] = validate_int(client_data[k])
             else:
                 validated_data[k] = None
@@ -371,7 +373,11 @@ def validate_location(location_id):
 def validate_int(s):
     if isinstance(s, str) and not s:  # check for empty string, but s can also be an int when coming from json
         raise InvalidAPIUsage("Invalid number", status_code=400)
-    val = int(s)
+    try:
+        val = int(s)
+    except ValueError:
+        raise InvalidAPIUsage("Invalid number", status_code=400)
+
     if val < 0:
         raise InvalidAPIUsage("Invalid number", status_code=400)
     return val
