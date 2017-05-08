@@ -36,15 +36,39 @@
             </td>
         </tr>
         <tr>
-            <td>Charging (incl. you):</td>
+            <td>Problem:</td>
+            <td>
+                <select name="problem">
+                    <option value="none">No problems / Keine Probleme</option>
+                    <option value="limitedPower">Limited power / Leistungseinschränkung</option>
+                    <option value="partialFailure">Partial failure / Teilausfall</option>
+                    <option value="completeFailure">Complete failure / Totalausfall</option>
+                    <option value="trafficDisruption">Traffic disruption / Verkehrsbeeinträchtigung</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Select Stalls / Stall Auswahl:</td>
+            <td>
+                <select name="affectedStalls" multiple>
+                    <option value="1A">1A</option><option value="1B">1B</option>
+                    <option value="2A">2A</option><option value="2B">2B</option>
+                    <option value="3A">3A</option><option value="3B">3B</option>
+                    <option value="4A">4A</option><option value="4B">4B</option>
+                    <option value="5A">5A</option><option value="5B">5B</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Charging (incl. you) / Am Laden (inkl. dir):</td>
             <td><input name="charging" type="text" /></td>
         </tr>
         <tr>
-            <td>Waiting:</td>
+            <td>Waiting / Am Warten:</td>
             <td><input name="waiting" type="text" value="0" /></td>
         </tr>
         <tr>
-            <td>Blocked:</td>
+            <td>Blocked / Blockiert:</td>
             <td><input name="blocked" type="text" value="0" /></td>
         </tr>
         <tr>

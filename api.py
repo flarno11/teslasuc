@@ -144,7 +144,10 @@ def is_legacy():
 def checkin():
     if request.method == 'POST':
         if is_legacy():
-            client_data = request.form
+            client_data = dict(request.form.items())
+            if 'affectedStalls' in request.form:
+                client_data['affectedStalls'] = request.form.getlist('affectedStalls')
+                client_data['stalls'] = 10  # should be the same as the hard coded list of select stalls in form.html
         else:
             client_data = request.get_json(force=True)
 
