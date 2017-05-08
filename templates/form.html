@@ -30,7 +30,11 @@
                 <select name="locationId">
                 <option></option>
                 {% for s in superChargers %}
-                    <option value="{{ s.locationId }}">{{ s.country }} {{ s.title }} ({{ s.stalls }})</option>
+                    {% if s.locationId == preselectedSupercharger %}
+                        <option value="{{ s.locationId }}" selected>{{ s.country }} {{ s.title }} ({{ s.stalls }})</option>
+                    {% else %}
+                        <option value="{{ s.locationId }}">{{ s.country }} {{ s.title }} ({{ s.stalls }})</option>
+                    {% endif %}
                 {% endfor %}
                 </select>
             </td>

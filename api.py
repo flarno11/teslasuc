@@ -70,6 +70,8 @@ def index():
             or 'QtCarBrowser' in request.headers.get('User-Agent')\
             or is_legacy():
 
+        preselected_supercharger = request.args.get('locationId', None)
+
         country = validate_str(request.args.get('country', ''), max_len=100)
 
         countries = [s['_id'] for s in suc_collection.aggregate([
@@ -94,6 +96,7 @@ def index():
                                countries=countries,
                                time=tz_utc.localize(datetime.datetime.utcnow()).astimezone(tz_zurich).strftime(TimeFormatSimple),
                                superChargers=super_chargers,
+                               preselectedSupercharger=preselected_supercharger,
                                msg=request.args.get('msg', None),
                                tffUserId=request.args.get('tffUserId', '')
         )
