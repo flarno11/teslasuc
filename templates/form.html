@@ -27,7 +27,7 @@
         <tr>
             <td>SuperCharger:</td>
             <td>
-                <select name="locationId" required>
+                <select name="locationId" id="locationId" required onchange="superChargerSelected()">
                 <option></option>
                 {% for s in superChargers %}
                     {% if s.locationId == preselectedSupercharger %}
@@ -44,27 +44,27 @@
             <td>
                 <select name="problem" required>
                     <option></option>
-                    <option value="none">No problems / Keine Probleme</option>
-                    <option value="limitedPower">Limited power / Leistungseinschränkung</option>
-                    <option value="partialFailure">Partial failure / Teilausfall</option>
-                    <option value="completeFailure">Complete failure / Totalausfall</option>
-                    <option value="trafficDisruption">Traffic disruption / Verkehrsbeeinträchtigung</option>
+                    {% for problem in problems %}
+                        {% if problem.0 == lastCheckin.problem %}
+                            <option value="{{ problem.0 }}" selected>{{ problem.1 }}</option>
+                        {% else %}
+                            <option value="{{ problem.0 }}">{{ problem.1 }}</option>
+                        {% endif %}
+                    {% endfor %}
                 </select>
             </td>
         </tr>
         <tr>
             <td>Select Stalls / Stall Auswahl:</td>
             <td style="white-space: nowrap">
-                <input type="checkbox" name="affectedStalls" value="1A" id="affectedStalls1A" /><label for="affectedStalls1A">1A</label>
-                <input type="checkbox" name="affectedStalls" value="1B" id="affectedStalls1B" /><label for="affectedStalls1B">1B</label>
-                <input type="checkbox" name="affectedStalls" value="2A" id="affectedStalls2A" /><label for="affectedStalls2A">2A</label>
-                <input type="checkbox" name="affectedStalls" value="2B" id="affectedStalls2B" /><label for="affectedStalls2B">2B</label>
-                <input type="checkbox" name="affectedStalls" value="3A" id="affectedStalls3A" /><label for="affectedStalls3A">3A</label>
-                <input type="checkbox" name="affectedStalls" value="3B" id="affectedStalls3B" /><label for="affectedStalls3B">3B</label>
-                <input type="checkbox" name="affectedStalls" value="4A" id="affectedStalls4A" /><label for="affectedStalls4A">4A</label>
-                <input type="checkbox" name="affectedStalls" value="4B" id="affectedStalls4B" /><label for="affectedStalls4B">4B</label>
-                <input type="checkbox" name="affectedStalls" value="5A" id="affectedStalls5A" /><label for="affectedStalls5A">5A</label>
-                <input type="checkbox" name="affectedStalls" value="5B" id="affectedStalls5B" /><label for="affectedStalls5B">5B</label>
+                {% for stall in stalls %}
+                    {% if stall in lastCheckin.affectedStalls %}
+                        <input type="checkbox" name="affectedStalls" value="{{ stall }}" id="affectedStalls{{ stall }}" checked />
+                    {% else %}
+                        <input type="checkbox" name="affectedStalls" value="{{ stall }}" id="affectedStalls{{ stall }}" />
+                    {% endif %}
+                    <label for="affectedStalls{{ stall }}">{{ stall }}</label>
+                {% endfor %}
             </td>
         </tr>
         <tr>
@@ -89,11 +89,19 @@
         </tr>
         <tr>
             <td>Notes (optional):</td>
-            <td><textarea name="notes"></textarea></td>
+            <td><textarea name="notes">{{ lastCheckin.notes }}</textarea></td>
         </tr>
     </table>
 
     <input type="submit" value="Submit" />
 </form>
+
+<script>
+    function superChargerSelected() {
+        var x = document.getElementById("locationId").value;
+        location.href = '/?legacy=true&locationId=' + x;
+    }
+</script>
+
 </body>
 </html>

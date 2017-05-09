@@ -2,19 +2,24 @@
 <button ng-click="locate()" translate>Locate me</button>
 <md-progress-circular md-mode="indeterminate" ng-if="locating" class="locate-progress"></md-progress-circular>
 
+<!--
+ min-length=2 because there are japanese SuC with only two characters
+ no-cache=true because after submitting the latest problem must be applied and not a cache one
+ -->
 <md-autocomplete
-  id="{{sucId}}"
-  md-selected-item="selectedItem"
-  md-search-text-change="searchTextChange(searchText)"
-  md-search-text="searchText"
-  md-selected-item-change="selectedItemChange(item)"
-  md-items="item in querySearch(searchText)"
-  md-item-text="item.title"
-  md-min-length="3"
-  md-require-match="true"
-  placeholder="{{ 'SuperCharger' | translate }}">
-<md-item-template>
-  <span md-highlight-text="searchText" md-highlight-flags="^i">{{item.title}}</span>
-</md-item-template>
-<md-not-found translate>No results found</md-not-found>
+    id="{{sucId}}"
+    md-selected-item="selectedItem"
+    md-search-text-change="searchTextChange(searchText)"
+    md-search-text="searchText"
+    md-selected-item-change="selectedItemChange(item)"
+    md-items="item in querySearch(searchText)"
+    md-item-text="item.title"
+    md-min-length="2"
+    md-require-match="true"
+    md-no-cache="true"
+    placeholder="{{ 'SuperCharger' | translate }}">
+    <md-item-template>
+        <span md-highlight-text="searchText" md-highlight-flags="^i">{{item.title}}</span>
+    </md-item-template>
+    <md-not-found translate>No results found</md-not-found>
 </md-autocomplete>

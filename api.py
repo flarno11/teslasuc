@@ -29,6 +29,7 @@ tz_zurich = timezone("Europe/Zurich")
 
 max_distance = 20000
 pattern_latlng = re.compile("(\d+\.\d+),(\d+\.\d+)")
+legacy_nof_stalls = 10
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -73,6 +74,12 @@ def index():
             or is_legacy():
 
         preselected_supercharger = request.args.get('locationId', None)
+        last_checkin = checkin_collection.find_one({'suc.locationId': preselected_supercharger},
+                                                   sort=[('checkin.time', pymongo.DESCENDING)])
+        if last_checkin:
+            last_checkin = last_checkin['checkin']
+        else:
+            last_checkin = {'problem': None, 'affectedStalls': [], 'notes': None}
 
         country = validate_str(request.args.get('country', ''), max_len=100)
 
@@ -94,11 +101,23 @@ def index():
             .find(query, {'locationId': True, 'title': True, 'country': True, 'stalls': True})\
             .sort([('country', pymongo.ASCENDING), ('title', pymongo.ASCENDING)])
 
+        problems = [
+            ('none', 'No problems / Keine Probleme'),
+            ('limitedPower', 'Limited power / Leistungseinschränkung'),
+            ('partialFailure', 'Partial failure / Teilausfall'),
+            ('completeFailure', 'Complete failure / Totalausfall'),
+            ('trafficDisruption', 'Traffic disruption / Verkehrsbeeinträchtigung'),
+        ]
+        stalls = sorted(generate_stall_names(legacy_nof_stalls))
+
         return render_template('form.html',
                                countries=countries,
                                time=tz_utc.localize(datetime.datetime.utcnow()).astimezone(tz_zurich).strftime(TimeFormatSimple),
                                superChargers=super_chargers,
                                preselectedSupercharger=preselected_supercharger,
+                               problems=problems,
+                               stalls=stalls,
+                               lastCheckin=last_checkin,
                                msg=request.args.get('msg', None),
                                tffUserId=request.args.get('tffUserId', '')
         )
@@ -134,6 +153,10 @@ def lookup_query():
     else:
         results = []
 
+    for r in results:
+        last_checkin = checkin_collection.find_one({'suc.locationId': r['locationId']}, sort=[('checkin.time', pymongo.DESCENDING)])
+        r['lastCheckin'] = last_checkin['checkin'] if last_checkin else None
+
     return jsonify(results)
 
 
@@ -152,7 +175,9 @@ def checkin():
             client_data = dict(request.form.items())
             if 'affectedStalls' in request.form:
                 client_data['affectedStalls'] = request.form.getlist('affectedStalls')
-                client_data['stalls'] = 10  # should be the same as the hard coded list of select stalls in form.html
+            else:
+                client_data['affectedStalls'] = []
+            client_data['stalls'] = legacy_nof_stalls  # should be the same as the hard coded list of select stalls in form.html
         else:
             client_data = request.get_json(force=True)
 

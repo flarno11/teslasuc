@@ -239,7 +239,6 @@ angular.module("myApp", ['ngRoute', 'ngCookies', 'ngMaterial', 'gettext', 'suc.c
                 $scope.items.push((i + 1) + "B");
             }
 
-            $scope.selected = [];
             $scope.toggle = function(item) {
                 var idx = $scope.selected.indexOf(item);
                 if (idx > -1) {
@@ -310,10 +309,16 @@ angular.module("myApp", ['ngRoute', 'ngCookies', 'ngMaterial', 'gettext', 'suc.c
 
         if (newValue != undefined) {
             $scope.item = newValue;
-            //$scope.item.locationId = newValue.locationId;
-            $scope.item.problem = 'none';
-            $scope.item.notes = "";
-            $scope.item.affectedStalls = [];
+            if (newValue.lastCheckin) {
+                $scope.item.problem = newValue.lastCheckin.problem;
+                $scope.item.affectedStalls = newValue.lastCheckin.affectedStalls;
+                $scope.item.notes = newValue.lastCheckin.notes;
+            } else {
+                $scope.item.problem = 'none';
+                $scope.item.affectedStalls = [];
+                $scope.item.notes = "";
+            }
+            $log.debug("New item", $scope.item);
         }
     });
 
