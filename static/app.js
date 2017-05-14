@@ -309,15 +309,24 @@ angular.module("myApp", ['ngRoute', 'ngCookies', 'ngMaterial', 'gettext', 'suc.c
 
         if (newValue != undefined) {
             $scope.item = newValue;
-            if (newValue.lastCheckin) {
+            if (newValue.lastCheckin && newValue.lastCheckin.problem) {
                 $scope.item.problem = newValue.lastCheckin.problem;
-                $scope.item.affectedStalls = newValue.lastCheckin.affectedStalls;
-                $scope.item.notes = newValue.lastCheckin.notes;
             } else {
                 $scope.item.problem = 'none';
+            }
+
+            if (newValue.lastCheckin && newValue.lastCheckin.affectedStalls) {
+                $scope.item.affectedStalls = newValue.lastCheckin.affectedStalls;
+            } else {
                 $scope.item.affectedStalls = [];
+            }
+
+            if (newValue.lastCheckin && newValue.lastCheckin.notes) {
+                $scope.item.notes = newValue.lastCheckin.notes;
+            } else {
                 $scope.item.notes = "";
             }
+
             $log.debug("New item", $scope.item);
         }
     });
