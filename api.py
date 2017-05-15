@@ -128,7 +128,10 @@ def index():
 @app.route('/config.js')
 def config():
     s = "var config = " + JSONEncoder().encode(
-        {'userAgentLanguages': parse_user_accept_languages(request.headers.get('Accept-Language'))}
+        {
+            'userAgentLanguages': parse_user_accept_languages(request.headers.get('Accept-Language')),
+            'overviewUrl': os.environ.get('TESLASUC_OVERVIEW_URL'),
+         }
     ) + ";\n"
     return Response(s, mimetype='application/javascript')
 

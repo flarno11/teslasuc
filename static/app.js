@@ -103,6 +103,7 @@ angular.module("myApp", ['ngRoute', 'ngCookies', 'ngMaterial', 'gettext', 'suc.c
 
     $log.debug('start currentNavItem=' + $scope.currentNavItem);
 
+    $scope.overviewUrl = config['overviewUrl'];
 
     $scope.lang = 'en';
     $scope.switchLanguage = function(lang) {
