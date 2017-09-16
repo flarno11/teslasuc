@@ -454,7 +454,7 @@ angular.module("myApp", ['ngRoute', 'ngCookies', 'ngMaterial', 'gettext', 'suc.c
             });
             r.unshift(["Time", "Stalls", "Charging", "Blocked", "Waiting"]);
             $scope.superChargerStats = r;
-            $scope.superChargerStatsEmpty = $scope.superChargerStats.every(function(d) { return d.charging == null });
+            $scope.superChargerStatsEmpty = response.data.items.every(function(d) { return d.charging == null });
 
             console.log('superChargerStats=', $scope.superChargerStats, ', superChargerStatsEmpty=', $scope.superChargerStatsEmpty);
         }, function errorCallback(response) {
