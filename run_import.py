@@ -9,8 +9,8 @@ from config import setup_logging, setup_db
 
 logger = setup_logging()
 
-pattern_suc = re.compile("(\d+) Supercharger", re.DOTALL)
-pattern_dc = re.compile("(\d+) Tesla Connector", re.DOTALL)
+pattern_suc = re.compile("(\d+) Supercharger", flags=re.DOTALL | re.IGNORECASE)
+pattern_dc = re.compile("(\d+) Tesla Connector", flags=re.DOTALL | re.IGNORECASE)
 
 tz_zurich = timezone('Europe/Zurich')
 tz_utc = timezone('UTC')
