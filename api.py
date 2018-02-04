@@ -8,6 +8,7 @@ from datetime import timedelta
 from time import sleep
 
 import pymongo
+from flask.helpers import make_response
 from flask.templating import render_template
 from flask import Flask, redirect, url_for, jsonify, request
 from bson.objectid import ObjectId
@@ -389,6 +390,19 @@ def overview():
             mimetype='application/javascript')
     else:
         return jsonify(results)
+
+
+@app.route('/metrics')
+def metrics():
+    results = [
+        'teslasuc_checkin_count ' + str(checkin_collection.count()),
+        'teslasuc_super_chargers_count ' + str(suc_collection.count({'type': 'supercharger'})),
+        'teslasuc_destination_chargers_count ' + str(suc_collection.count({'type': 'destination_charger'})),
+    ]
+
+    response = make_response("\n".join(results) + "\n")
+    response.headers["content-type"] = "text/plain"
+    return response
 
 
 def validate_location(location_id):
