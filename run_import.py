@@ -30,7 +30,9 @@ def chargers(s, location_id):
 
 
 def import_from_url(url, type, suc_collection):
-    res = requests.get(url)
+    res = requests.get(url, headers={
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:58.0) Gecko/20100101 Firefox/58.0'
+    })
     if res.status_code != 200:
         logger.error('Failed to load type=%s, code=%d, url=%s, res=%s' % (type, res.status_code, url, res.text))
 
