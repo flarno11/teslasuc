@@ -38,7 +38,10 @@ def import_from_url(url, type, suc_collection, truncate):
 
     log_line = 'parsing type=%s, code=%d, url=%s, len=%d, text=%s' % (type, res.status_code, url, len(res.text), res.text[:50])
     logger.debug(log_line)
-    results = json.loads(res.text)
+    try:
+        results = json.loads(res.text)
+    except json.decoder.JSONDecodeError:
+        return res.text[:1000]
 
     if truncate:
         suc_collection.remove()
