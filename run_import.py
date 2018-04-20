@@ -29,15 +29,20 @@ def chargers(s, location_id):
     return None
 
 
-def import_from_url(url, type, suc_collection):
+def import_from_url(url, type, suc_collection, truncate):
     res = requests.get(url, headers={
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:58.0) Gecko/20100101 Firefox/58.0'
     })
     if res.status_code != 200:
         logger.error('Failed to load type=%s, code=%d, url=%s, res=%s' % (type, res.status_code, url, res.text))
 
-    logger.debug('parsing type=%s, code=%d, url=%s, len=%d, text=%s' % (type, res.status_code, url, len(res.text), res.text[:10]))
+    log_line = 'parsing type=%s, code=%d, url=%s, len=%d, text=%s' % (type, res.status_code, url, len(res.text), res.text[:50])
+    logger.debug(log_line)
     results = json.loads(res.text)
+
+    if truncate:
+        suc_collection.remove()
+
     inserted = 0
     failed = 0
     skipped = 0
@@ -77,7 +82,7 @@ def import_from_url(url, type, suc_collection):
             logger.warn("Duplicated key=%s" % d['locationId'])
             failed += 1
     logger.info("Imported, type=%s, count=%d" % (type, len(results)))
-    return {'inserted': inserted, 'failed': failed, 'skipped': skipped}
+    return {'inserted': inserted, 'failed': failed, 'skipped': skipped, 'logLine': log_line}
 
 
 def import_checkins(data, suc_collection, checkin_collection):
@@ -156,12 +161,14 @@ def import_checkins(data, suc_collection, checkin_collection):
     return len(parsed)
 
 
-def run_import(suc_collection):
-    logger.info("Importing, suc_collection_count=%d" % suc_collection.count())
-    suc_collection.remove()
-    stats_suc = import_from_url('https://www.tesla.com/all-locations?type=supercharger', 'supercharger', suc_collection)
-    stats_dec = import_from_url('https://www.tesla.com/all-locations?type=destination_charger', 'destination_charger', suc_collection)
-    return {'statsSuc': stats_suc, 'statsDec': stats_dec}
+def run_import_suc(suc_collection):
+    logger.info("Importing, previous suc_collection_count=%d" % suc_collection.count())
+    return import_from_url('https://www.tesla.com/all-locations?type=supercharger', 'supercharger', suc_collection, True)
+
+
+def run_import_dec(suc_collection):
+    logger.info("Importing, previous suc_collection_count=%d" % suc_collection.count())
+    return import_from_url('https://www.tesla.com/all-locations?type=destination_charger', 'destination_charger', suc_collection, False)
 
 
 if __name__ == "__main__":

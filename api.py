@@ -18,7 +18,7 @@ from pytz import timezone
 from config import setup_logging, setup_db
 from lib import TimeFormat, convert_time_fields, TimePattern, convert_to_csv, TimePatternSimple, TimeFormatSimple, \
     parse_user_accept_languages
-from run_import import run_import, import_checkins
+from run_import import import_checkins, run_import_dec, run_import_suc
 
 logger = setup_logging()
 db = setup_db()
@@ -138,8 +138,13 @@ def config():
 
 
 @app.route('/sucImport', methods=['POST'])
-def route_import():
-    return jsonify(run_import(suc_collection))
+def route_import_suc():
+    return jsonify(run_import_suc(suc_collection))
+
+
+@app.route('/decImport', methods=['POST'])
+def route_import_dec():
+    return jsonify(run_import_dec(suc_collection))
 
 
 @app.route('/lookup')
