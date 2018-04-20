@@ -2,7 +2,7 @@ import json
 import requests
 import re
 import datetime
-from pymongo.errors import DuplicateKeyError
+from pymongo.errors import DuplicateKeyError, BulkWriteError
 from pytz import timezone
 
 from config import setup_logging, setup_db
@@ -46,6 +46,7 @@ def import_from_url(url, type, suc_collection, truncate):
     inserted = 0
     failed = 0
     skipped = 0
+    documents = []
     for r in results:
         if 'location_id' not in r:
             logger.warn("No location_id for %s" % str(r))
@@ -75,14 +76,20 @@ def import_from_url(url, type, suc_collection, truncate):
             lng = float(r['longitude'])
             d['loc'] = {'type': "Point", 'coordinates': [lng, lat]}
 
-        try:
-            suc_collection.insert(d)
-            inserted += 1
-        except DuplicateKeyError:
-            logger.warn("Duplicated key=%s" % d['locationId'])
-            failed += 1
-    logger.info("Imported, type=%s, count=%d" % (type, len(results)))
-    return {'inserted': inserted, 'failed': failed, 'skipped': skipped, 'logLine': log_line}
+        documents.append(d)
+        #try:
+        #    suc_collection.insert(d)
+        #    inserted += 1
+        #except DuplicateKeyError:
+        #    logger.warn("Duplicated key=%s" % d['locationId'])
+        #    failed += 1
+    try:
+        suc_collection.insert_many(documents)
+        logger.info("Imported, type=%s, count=%d" % (type, len(results)))
+        return {'inserted': len(documents), 'failed': 0, 'skipped': skipped, 'logLine': log_line}
+    except BulkWriteError as e:
+        logger.error(str(e))
+        return {'inserted': 0, 'failed': len(documents), 'skipped': skipped, 'logLine': log_line, 'error': str(e), 'errorDetails': str(e.details)}
 
 
 def import_checkins(data, suc_collection, checkin_collection):
