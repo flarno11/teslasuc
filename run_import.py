@@ -36,7 +36,7 @@ def import_from_url(url, type, suc_collection):
     if res.status_code != 200:
         logger.error('Failed to load type=%s, code=%d, url=%s, res=%s' % (type, res.status_code, url, res.text))
 
-    logger.debug('parsing type=%s, code=%d, url=%s' % (type, res.status_code, url))
+    logger.debug('parsing type=%s, code=%d, url=%s, len=%d, text=%s' % (type, res.status_code, url, len(res.text), res.text[:10]))
     results = json.loads(res.text)
     inserted = 0
     failed = 0
