@@ -2,8 +2,9 @@
 
 ## Translations
 ### Preparation
-- Install nodejs, grunt
-- `npm install`
+- Install npm
+- `npm install grunt --save-dev`
+- `npm install grunt-angular-gettext --save-dev`
 
 ### Extract translations
     PATH=$PATH:./node_modules/.bin grunt nggettext_extract
