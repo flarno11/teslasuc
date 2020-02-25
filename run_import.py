@@ -31,7 +31,7 @@ def chargers(s, location_id):
 
 def import_from_url(url, type, suc_collection, truncate):
     res = requests.get(url, headers={
-        'User-Agent': ' Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:59.0) Gecko/20100101 Firefox/59.0'
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:59.0) Gecko/20100101 Firefox/59.0'
     })
     if res.status_code != 200:
         logger.error('Failed to load type=%s, code=%d, url=%s, res=%s' % (type, res.status_code, url, res.text))
@@ -50,6 +50,7 @@ def import_from_url(url, type, suc_collection, truncate):
     failed = 0
     skipped = 0
     documents = []
+    duplicates = {}
     for r in results:
         if 'location_id' not in r:
             logger.warn("No location_id for %s" % str(r))
@@ -60,6 +61,12 @@ def import_from_url(url, type, suc_collection, truncate):
             logger.info("Skip open_soon for %s" % r['location_id'])
             skipped += 1
             continue
+
+        if r['location_id'] in duplicates:
+            logger.info("Skip duplicates for %s" % r['location_id'])
+            skipped += 1
+            continue
+        duplicates[r['location_id']] = True
 
         d = {
             'type': type,
